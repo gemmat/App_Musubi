@@ -1,0 +1,101 @@
+#frame {
+  margin-left: 20px;
+  width: 820px;
+}
+
+#columnMain {
+  float: right;
+  width: 250px;
+}
+
+#columnLeft {
+  float: left;
+  width: 50px;
+}
+
+#columnRight {
+  float: right;
+  width: 520px;
+}
+
+#enclose {
+  float: left;
+  width: 300px;
+}
+
+#footer {
+  clear: both;
+  padding-top: 1em;
+  text-align: center;
+}
+
+#canvas {
+  border: lavender solid;
+  margin-left: 5px;
+}
+
+#pallete {
+  padding-top: 1em;
+  text-align: center;
+}
+
+#tools {
+  margin-top: 0px;
+  padding-left: 10px;
+  list-style-type: none;
+}
+
+#tools li img{
+  border: lavender double;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+}
+
+#tools li img.selected{
+  border: aliceBlue solid;
+  border-width: 6px;
+}
+
+#commands {
+  margin-top: 0px;
+  padding-left: 10px;
+  list-style-type: none;
+  float: left;
+}
+
+#commands li img{
+  height: 45px;
+  margin: 1px;
+  border: lavender outset;
+  cursor: pointer;
+}
+                  
+img.char_aZ {
+  border: lavender solid;
+}
+
+img.char_aZ.selected {
+  border: blue double;
+  background: aliceBlue;
+}
+
+#cursorChar {
+  position: absolute;
+}
+
+#cursorChar.hidden {
+  display: none;
+}
+
+#history {
+  border: dotted;
+  width:  440px;
+  height: 400px;
+  overflow: auto;
+}
+
+img.msg {
+  margin: 1px;
+  border: lavender solid;
+}

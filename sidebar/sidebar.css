@@ -1,0 +1,4 @@
+div#history-container {
+  height: 80%;
+  overflow: auto;
+}

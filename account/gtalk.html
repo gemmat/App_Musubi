@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Google Talk</title>
+    <script type="text/javascript" src="../musubi.js"></script>
+    <script type="text/javascript" src="../prototype.js"></script>
+    <script type="text/javascript" src="service.js"></script>
+    <script type="text/javascript" src="gtalk.js"></script>
+  </head>
+  <body>
+    <a href="account.html">もどる</a><br/>
+    <img src="gtalk.png" alt="Google Talk"/>
+    <span>Google Talkのアカウント</span>
+    <form id="account" onsubmit="return send();">
+      <input type="hidden" id="userid" name="userid"></input>
+      <dl>
+        <dt>ユーザ名</dt>
+        <dd><input type="text" id="username" name="username"></input></dd>
+        <dt>ドメイン</dt>
+        <dd>
+          <select id="domain" name="domain">
+            <option id="domain-gmail" value="gmail" selected>gmail.com</option>
+            <option id="domain-googlemail" value="googlemail">googlemail.com</option>
+          </select>
+        </dd>
+        <dt>パスワード</dt>
+        <dd><input type="password" id="password"          name="password"></input></dd>
+        <dt>パスワード確認(同じものをもう一度入力してください)</dt>
+        <dd><input type="password" id="password-confirm"  name="password-confirm"></input></dd>
+      </dl>
+      <input type="submit" value="OK"></input>
+      <hr/>
+      高度な設定
+      <dl>
+        <dt>リソース(Home, Office など)</dt>
+        <dd><input type="text" id="resource" name="resource"></input></dd>        
+        <dt>接続ホスト</dt>
+        <dd><input type="text" id="connection-host" name="connection-host" value="talk.google.com"></input></dd>
+        <dt>接続ポート</dt>
+        <dd><input type="text" id="connection-port" name="connection-port" value="443"></input></dd>
+        <dt>暗号化</dt>
+        <dd>
+          <input type="radio" id="connection-security-ssl"  name="connection-security" value="1"  checked="checked">あり</input>
+          <input type="radio" id="connection-security-none" name="connection-security" value="0">なし</input>
+        </dd>
+      </dl>
+    </form>
+  </body>
+</html>
