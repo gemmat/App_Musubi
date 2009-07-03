@@ -13,19 +13,19 @@ var Musubi = {
       this.eltOut.addEventListener("DOMNodeInserted", this.listnerOut, false);
     }
   },
-  listnerIn:  function xmppwebListenerIn(aEvt) {
+  listnerIn:  function MusubiListenerIn(aEvt) {
     Musubi.onRecv(Musubi.DOMToE4X(aEvt.target));
   },
-  listnerOut: function xmppwebListenerOut(aEvt) {
+  listnerOut: function MusubiListenerOut(aEvt) {
     if ("createEvent" in document) {
       var e = document.createEvent("Events");
       e.initEvent("XmppEvent", true, false);
       aEvt.target.dispatchEvent(e);
     }
   },
-  onRecv: function xmppwebOnRecv(aXML) {
+  onRecv: function MusubiOnRecv(aXML) {
   },
-  send: function xmppwebSend(aXML) {
+  send: function MusubiSend(aXML) {
     Musubi.eltOut.appendChild(Musubi.E4XToDOM(aXML));
   },
   DOMToE4X: function DOMToE4X(aDOMNode) {
