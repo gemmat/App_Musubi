@@ -6,7 +6,9 @@ function send() {
                     <name>{o["username"]}</name>
                     <domain>{o["domain"]}</domain>
                     <resource>{o["resource"]}</resource>
-                    <jid>{o["username"] + "@" + o["domain"]}</jid>
+                    <jid>{o["username"] + "@" + o["domain"] + "/" + o["resource"]}</jid>
+                    <address>{o["username"] + "@" + o["domain"]}</address>
+                    <password>{o["password"]}</password>
                     <connectionHost>{o["connection-host"]}</connectionHost>
                     <connectionPort>{o["connection-port"]}</connectionPort>
                     <connectionSecurity>{o["connection-security"]}</connectionSecurity>
@@ -23,8 +25,9 @@ function recvTest0() {
            <account id="0">
              <name>romeo</name>
              <domain>localhost</domain>
-             <resource>Musubi</resource>
-             <jid>romeo@localhost/Musubi</jid>
+             <resource></resource>
+             <jid>romeo@localhost/</jid>
+             <address>romeo@localhost</address>
              <connectionHost>localhost</connectionHost>
              <connectionPort>5223</connectionPort>
              <connectionSecurity>0</connectionSecurity>
