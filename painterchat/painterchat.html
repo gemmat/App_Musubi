@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8">
+    <title>Canvas Chat with Painter(Gauche)</title>
+    <script type="text/javascript" src="../musubi.js"></script>
+    <script type="text/javascript" src="../prototype.js"></script>
+    <script type="application/javascript" src="painter.js"></script>
+  </head>
+  <body>
+    <canvas id="cnv" style="border: solid;" width="640" height="480"></canvas>
+    <img id="gauche" src="gauche.jpg"/><br/>
+    <dl id="history"></dl>
+    <form id="chat" onsubmit="return send();">
+      <textarea id="msg" name="msg" rows="3" cols="40"></textarea>
+      <input type="submit" value="send"></input><br>
+    </form>
+  </body>
+</html>
