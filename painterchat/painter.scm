@@ -152,16 +152,17 @@
       (below (flip-vert half) half))))
 
 (define (paint-gauche frame)
-  (print "ctx.save();")
-  (format #t "ctx.transform(~a,~a,~a,~a,~a,~a);\n"
-          (xcor-vect (edge1-frame frame))
-          (ycor-vect (edge1-frame frame))
-          (xcor-vect (edge2-frame frame))
-          (ycor-vect (edge2-frame frame))
-          (xcor-vect (origin-frame frame))
-          (ycor-vect (origin-frame frame)))
-  (print "draw();")
-  (print "ctx.restore();"))
+  (my-printer (string-append
+               "ctx.save();"
+               (format #f "ctx.transform(~a,~a,~a,~a,~a,~a);"
+                       (xcor-vect (edge1-frame frame))
+                       (ycor-vect (edge1-frame frame))
+                       (xcor-vect (edge2-frame frame))
+                       (ycor-vect (edge2-frame frame))
+                       (xcor-vect (origin-frame frame))
+                       (ycor-vect (origin-frame frame)))
+               "draw();"
+               "ctx.restore();")))
 
 (define-constant cnv-frame (make-frame (make-vect 0 0)
                                        (make-vect 1 0)
@@ -186,6 +187,8 @@
                               expr))
               args)))
 
+(define my-printer #f)
+
 (define (main args)
   (call-with-xmpp-connection hostname
     (lambda (c)
@@ -195,8 +198,7 @@
       (xmpp-presence c)
       (while #t
         (receive (from expr) (my-reader c)
-          (let1 my-printer (my-printer-factory c from)
-            (my-printer (guard (e
-                                (else (condition-ref e 'message)))
-                               (with-output-to-string (lambda ()
-                                                        (eval expr (interaction-environment))))))))))))
+          (set! my-printer (my-printer-factory c from))
+          (my-printer (guard (e
+                              (else (condition-ref e 'message)))
+                             (eval expr (interaction-environment)))))))))

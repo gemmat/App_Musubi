@@ -1,7 +1,7 @@
 var ctx = null;
 var g = null;
-const cnvWidth  = 640;
-const cnvHeight = 480;
+const cnvWidth  = 320;
+const cnvHeight = 240;
 
 function draw() {
   ctx.drawImage(g, 0, 0, 1, 1);
