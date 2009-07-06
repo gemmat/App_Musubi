@@ -162,7 +162,8 @@
                        (xcor-vect (origin-frame frame))
                        (ycor-vect (origin-frame frame)))
                "draw();"
-               "ctx.restore();")))
+               "ctx.restore();"))
+  "ok.")
 
 (define-constant cnv-frame (make-frame (make-vect 0 0)
                                        (make-vect 1 0)
