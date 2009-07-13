@@ -1,4 +1,49 @@
+div#accounts-container {
+  border: medium solid;
+}
+
+div#accounts-link {
+  text-align: right;
+}
+
+ul#accounts {
+  padding-left: 0px;
+}
+
+ul#accounts > li {
+  list-style-type: none;
+}
+
+ul#accounts > li > span {
+  position: relative;
+  top: -3px;
+  text-decoration: underline;
+  cursor: pointer;
+  color: blue;
+}
+
+div#contacts-container {
+  border: medium solid;
+}
+
+ul#contacts {
+  padding-left: 0px;
+}
+
+ul#contacts > li {
+  list-style-type: none;
+}
+
+ul#contacts > li > span {
+  position: relative;
+  top: -3px;
+  text-decoration: underline;
+  cursor: pointer;
+  color: blue;
+}
+
 div#history-container {
-  height: 80%;
+  height: 60%;
   overflow: auto;
+  border: medium solid;
 }

@@ -1,33 +1,80 @@
 function appendMessage(aFrom, aMessage) {
-  var dt  = new Element("dt");
-  var img = new Element("img", {src: "romeo.png", alt: aFrom, title: aFrom});
-  dt.appendChild(img);
-  dt.appendChild(document.createTextNode(aFrom));
-  var dd = new Element("dd").update(aMessage);
   var history = $("history");
-  history.appendChild(dt);
-  history.appendChild(dd);
-}
-
-function appendURLMessage(aFrom, aURL, aMessage) {
-  var dt = new Element("dt");
-  var dd = new Element("dd");
-  var a  = new Element("a", {href: aURL}).update(aMessage);
-  Event.observe(a, "click", function(e) {
-                  openMsgURL(e, aFrom, aURL, aMessage);
-                });
-  dd.appendChild(a);
-  var history = $("history");
-  history.appendChild(dt);
-  history.appendChild(dd);
+  history.appendChild(DT(IMG({src: "romeo.png", alt: aFrom, title: aFrom}),
+                         aFrom));
+  history.appendChild(DD(aMessage));
 }
 
 function appendXHTMLMessage(aFrom, aMessage) {
-  var dt = new Element("dt");
-  var dd = new Element("dd").update(aMessage);
+  var elt = DD();
+  elt.innerHTML = aMessage;
   var history = $("history");
-  history.appendChild(dt);
-  history.appendChild(dd);
+  history.appendChild(DT(aFrom));
+  history.appendChild(elt);
+}
+
+function appendURLMessage(aFrom, aURL, aMessage) {
+  var elt = A({href: aURL}, aMessage);
+  Event.observe(elt, "click", function(e) {
+    openMsgURL(aFrom, aURL, aMessage);
+    Event.stop(e);
+  });
+  var history = $("history");
+  history.appendChild(DT());
+  history.appendChild(DD(elt));
+}
+
+function appendPresence(aFrom, aPresenceType) {
+  var address = /^[^\/]+/.exec(aFrom);
+  if (!address) return;
+  aFrom = address[0];
+  var arr = [];
+  var src = "";
+  var alt = (aPresenceType == "unavailable") ? "offline" : "online";
+  var i, len;
+
+  arr = $$("span.account-name");
+  src = (aPresenceType == "unavailable") ? "offline.png" : "online.png";
+  for (i = 0, len = arr.length; i < len; i++) {
+    if (arr[i].textContent == aFrom) {
+      var input = arr[i].previous();
+      input.src = src;
+      input.alt = alt;
+      return;
+    }
+  }
+  arr = $$("span.contact-name");
+  src = (aPresenceType == "unavailable") ? "offline.png" : "online.png";
+  var notfound = true;
+  for (i = 0, len = arr.length; i < len; i++) {
+    if (arr[i].textContent == aFrom) {
+      var img = arr[i].previous();
+      img.src = src;
+      img.alt = alt;
+      notfound = false;
+    }
+  }
+  var elt = SPAN({className: "contact-name"}, aFrom);
+  Event.observe(elt, "click", function(e) {
+    Event.stop(e);
+    });
+  if (notfound) {
+    $("contacts").appendChild(
+      LI(IMG({src: src, alt: alt}),
+         elt));
+  }
+}
+
+function appendAccount(aAccountE4X) {
+  var elt = SPAN({className: "account-name"},
+              aAccountE4X.address.toString());
+  Event.observe(elt, "click", function(e) {
+    connect(aAccountE4X.address.toString());
+    Event.stop(e);
+  });
+  $("accounts").appendChild(
+    LI(INPUT({type: "image", src: "offline.png", alt: "click here to connect"}),
+       elt));
 }
 
 function send() {
@@ -37,97 +84,143 @@ function send() {
   Musubi.send(xml);
   appendMessage("me", $F("msg"));
   Field.clear("msg");
-  return false;
 }
 
 function recv(xml) {
   switch (xml.name().localName) {
   case "message":
-    appendMessage(xml.@from.toString(),
-                  xml.body.toString());
+    var nsXHTMLIm = new Namespace("http://jabber.org/protocol/xhtml-im");
+    var nsXHTML   = new Namespace("http://www.w3.org/1999/xhtml");
+    if (xml.nsXHTMLIm::html.nsXHTML::body.length()) {
+      appendXHTMLMessage(xml.@from.toString(),
+                         xml.nsXHTMLIm::html.nsXHTML::body.toString());
+    } else {
+      appendMessage(xml.@from.toString(),
+                    xml.body.toString());
+    }
     var nsJabberXOOB = new Namespace("jabber:x:oob");
     if (xml.nsJabberXOOB::x.nsJabberXOOB::url.length()) {
       appendURLMessage(xml.@from.toString(),
                        xml.nsJabberXOOB::x.nsJabberXOOB::url.toString(),
                        xml.nsJabberXOOB::x.nsJabberXOOB::desc.toString());
     }
-    var nsXHTMLIm = new Namespace("http://jabber.org/protocol/xhtml-im");
-    var nsXHTML   = new Namespace("http://www.w3.org/1999/xhtml");
-    if (xml.nsXHTMLIm::html.nsXHTML::body.length()) {
-      appendXHTMLMessage(xml.@from.toString(),
-                         xml.nsXHTMLIm::html.nsXHTML::body.toString());
-    }
+    break;
+  case "presence":
+    appendPresence(xml.@from.toString(), xml.@type.toString());
     break;
   case "musubi":
+    if (xml.@type == "result" && xml.accounts.length()) {
+      for (var i = 0, len = xml.accounts.account.length(); i < len; i++) {
+        appendAccount(xml.accounts.account[i]);
+      }
+    }
     break;
   }
   var historyContainer = $("history-container");
   historyContainer.scrollTop = historyContainer.scrollHeight;
 }
 
-function recvTest0() {
-  var from = "romeo@localhost";
-  var body = "hello, world.";
-  recv(<message from={from}>
-         <body>{body}</body>
-       </message>);
+function connect(aAddress) {
+  Musubi.send(<musubi type="set"><connect>{aAddress}</connect></musubi>);
 }
 
-function recvTest1() {
-  var from = "romeo@localhost";
-  var url  = "http://www.google.co.jp";
-  var desc = "Google";
-  recv(<message from={from}>
-         <body>hello world</body>
-         <x xmlns="jabber:x:oob">
-           <url>{url}</url>
-           <desc>{desc}</desc>
-         </x>
-       </message>);
-}
-
-function recvTest2() {
-  var from = "romeo@localhost";
-  var url  = "http://www.google.co.jp";
-  var desc = "Google";
-  recv(<message from={from}>
-         <body>hello world</body>
-         <html xmlns='http://jabber.org/protocol/xhtml-im'>
-           <body xmlns='http://www.w3.org/1999/xhtml'>
-             <p style='font-weight:bold'>hi!</p>
-           </body>
-         </html>
-       </message>);
-}
-
-
-function connect() {
-  Musubi.send(<musubi><connect></connect></musubi>);
-}
-
-function disconnect() {
-  Musubi.send(<musubi><disconnect></disconnect></musubi>);
-}
-
-function openMsgURL(evt, aFrom, aURL, aMessage) {
-  Musubi.send(<musubi>
+function openMsgURL(aFrom, aURL, aMessage) {
+  Musubi.send(<musubi type="get">
                  <urlmsg>
                    <from>{aFrom}</from>
                    <url>{aURL}</url>
                    <desc>{aMessage}</desc>
                  </urlmsg>
                </musubi>);
-  Event.stop(evt);
 }
 
 function openMsgSender(evt) {
-  Musubi.send(<musubi>
+  Musubi.send(<musubi type="get">
                  <sender>{evt.target.innerHTML}</sender>
                </musubi>);
   Event.stop(evt);
 }
 
-window.onload = function windowOnLoad() {
+function recvTest0() {
+  recv(<message from="romeo@localhost">
+         <body>"hello, world."</body>
+       </message>);
+}
+
+function recvTest1() {
+  recv(<message from="romeo@localhost">
+         <body>hello world</body>
+         <x xmlns="jabber:x:oob">
+           <url>"http://www.google.co.jp"</url>
+           <desc>"Google"</desc>
+         </x>
+       </message>);
+}
+
+function recvTest2() {
+  recv(<message from="romeo@localhost">
+         <body>hello world</body>
+         <html xmlns="http://jabber.org/protocol/xhtml-im">
+           <body xmlns="http://www.w3.org/1999/xhtml">
+             <p style="font-weight:bold">hi!</p>
+           </body>
+         </html>
+       </message>);
+}
+
+function recvTest3() {
+  recv(<presence from="juliet@localhost"/>);
+}
+
+function recvTest4() {
+  recv(<presence from="juliet@localhost" type="unavailable"/>);
+}
+
+function recvTest5() {
+  recv(<presence from="someone@localhost"/>);
+}
+
+function recvTest6() {
+  recv(<musubi type="result">
+         <accounts>
+           <account id="3">
+             <name>romeo</name>
+             <domain>localhost</domain>
+             <resource>Musubi</resource>
+             <jid>romeo@localhost/Musubi</jid>
+             <address>romeo@localhost</address>
+             <connectionHost>localhost</connectionHost>
+             <connectionPort>5223</connectionPort>
+             <connectionSecurity>0</connectionSecurity>
+             <comment></comment>
+           </account>
+           <account id="4">
+             <name>juliet</name>
+             <domain>gmail</domain>
+             <resource>Musubi</resource>
+             <jid>teruakigemma@gmail/Musubi</jid>
+             <address>teruakigemma@gmail</address>
+             <connectionHost>talk.google.com</connectionHost>
+             <connectionPort>443</connectionPort>
+             <connectionSecurity>1</connectionSecurity>
+             <comment></comment>
+           </account>
+         </accounts>
+       </musubi>);
+}
+
+Event.observe(window, "load", function (e) {
+  Builder.dump(window);
   Musubi.init();
   Musubi.onRecv = recv;
-};
+  Musubi.send(<musubi type="get">
+                <accounts/>
+              </musubi>);
+  Musubi.send(<musubi type="get">
+                <cachedpresences/>
+              </musubi>);
+  Event.observe("chat", "submit", function(e) {
+    send();
+    Event.stop(e);
+  });
+});

@@ -1,7 +1,7 @@
 function send() {
   var o = Form.serialize("account", true);
-  Musubi.send(<musubi>
-                <accounts type="set">
+  Musubi.send(<musubi type="set">
+                <accounts>
                   <account id={o["userid"]}>
                     <name>{o["username"]}</name>
                     <domain>{o["domain"]}</domain>
@@ -20,8 +20,8 @@ function send() {
 }
 
 function recvTest0() {
-  recv(<musubi>
-         <accounts type="result">
+  recv(<musubi type="result">
+         <accounts>
            <account id="0">
              <name>romeo</name>
              <domain>localhost</domain>
@@ -38,8 +38,8 @@ function recvTest0() {
 }
 
 function sendRequestUserInfo(aID) {
-  Musubi.send(<musubi>
-                <accounts type="get">
+  Musubi.send(<musubi type="get">
+                <accounts>
                   <account id={aID}/>
                 </accounts>
               </musubi>);

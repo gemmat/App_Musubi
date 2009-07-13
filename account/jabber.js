@@ -3,7 +3,7 @@ function recv(xml) {
   case "message":
     break;
   case "musubi":
-    if (xml.accounts.length() && xml.accounts.@type.toString() == "result") {
+    if (xml.@type == "result" && xml.accounts.length()) {
       if (xml.accounts.account.length()) {
         var a = xml.accounts.account[0];
         $("userid")             .value = a.@id               .toString();

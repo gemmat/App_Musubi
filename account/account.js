@@ -3,11 +3,11 @@ function recv(xml) {
   case "message":
     break;
   case "musubi":
-    if (xml.accounts.length() && xml.accounts.@type == "result") {
+    if (xml.@type == "result" && xml.accounts.length()) {
       var df = document.createDocumentFragment();
       for (var i = 0; i < xml.accounts.account.length(); i++) {
         var account = xml.accounts.account[i];
-        var service = "";
+        var service = {};
         switch (account.domain.toString()) {
         case "gmail":       //FALLTHROUGH
         case "googlemail":
@@ -25,43 +25,58 @@ function recv(xml) {
                     };
           break;
         }
-        var li = new Element("li");
-        var a = new Element("a", {href: service.href + "?id=" + account.@id});
-        var ul = new Element("ul", {className: "service"});
-        var liImg = new Element("li");
-        var img = new Element("img", {src: service.imgsrc,
-                                      alt: service.imgalt});
-        var liName = new Element("li").update(account.name.toString() +
-                                              "@" +
-                                              account.domain.toString() +
-                                              "/" +
-                                              account.resource.toString());
-        var liCap  = new Element("li").update(service.imgalt);
-        liImg.appendChild(img);
-        ul.appendChild(liImg);
-        ul.appendChild(liName);
-        ul.appendChild(liCap);
-        a.appendChild(ul);
-        li.appendChild(a);
-        df.appendChild(li);
+        var imgDefaultJID = IMG({src: "homeGray.png", className: "account-set-defaultjid"});
+        Event.observe(imgDefaultJID, "click", function(e) {
+          Musubi.send(<musubi type="set">
+                        <defaultjid>{e.target.up().down("span.account-jid").textContent}</defaultjid>
+                      </musubi>);
+          });
+        df.appendChild(
+          LI(
+            A({href: service.href + "?id=" + account.@id},
+              UL({className: "service"},
+                LI(IMG({src: service.imgsrc, alt: service.imgalt})),
+                LI(SPAN({className: "account-jid"},
+                        account.name.toString() + "@" + account.domain.toString()),
+                   SPAN("/" + account.resource.toString())),
+                LI(service.imgalt))),
+            imgDefaultJID));
+
       }
-      $("accounts").appendChild(df);
+       $("accounts").appendChild(df);
+    }
+    if (xml.@type == "result" && xml.defaultjid.length()) {
+      $$("span.account-jid").forEach(function(x) {
+        var li = x.up(3);
+        var img = li.down(8);
+        if (li.hasClassName("default-jid")) {
+          li.removeClassName("default-jid");
+          img.src = "homeGray.png";
+        }
+        if (x.textContent == xml.defaultjid.toString()) {
+          li.addClassName("default-jid");
+          img.src = "home.png";
+        }
+      });
     }
     break;
   }
 }
 
 function sendRequestAccounts() {
-  Musubi.send(<musubi>
-                <accounts type="get"/>
+  Musubi.send(<musubi type="get">
+                <accounts/>
+              </musubi>);
+  Musubi.send(<musubi type="get">
+                <defaultjid/>
               </musubi>);
 }
 
 function recvTest0() {
-  recv(<musubi>
-         <accounts type="result">
+  recv(<musubi type="result">
+         <accounts>
            <account id="3">
-             <name>juliet</name>
+             <name>romeo</name>
              <domain>localhost</domain>
              <resource>Musubi</resource>
              <jid>romeo@localhost</jid>
@@ -71,7 +86,7 @@ function recvTest0() {
              <comment></comment>
            </account>
            <account id="4">
-             <name>juliet</name>
+             <name>teruakigemma</name>
              <domain>gmail</domain>
              <resource>Musubi</resource>
              <jid>teruakigemma@gmail</jid>
@@ -82,9 +97,13 @@ function recvTest0() {
            </account>
          </accounts>
        </musubi>);
+  recv(<musubi type="result">
+         <defaultjid>romeo@localhost</defaultjid>
+       </musubi>);
 }
 
 Event.observe(window, "load", function (evt) {
+  Builder.dump(window);
   Musubi.init();
   Musubi.onRecv = recv;
   sendRequestAccounts();
