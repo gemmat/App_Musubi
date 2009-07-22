@@ -22,7 +22,7 @@ function recv(xml) {
                 xml.body.toString());
 }
 
-window.onload = function windowOnLoad() {
+Event.observe(window, "load", function (e) {
   Musubi.init();
   Musubi.onRecv = recv;
-};
+});

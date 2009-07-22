@@ -24,7 +24,7 @@ function appendURLMessage(aFrom, aURL, aMessage) {
   history.appendChild(DD(elt));
 }
 
-function appendPresence(aFrom, aPresenceType) {
+function appendPresence(aFrom, aTo, aPresenceType) {
   var address = /^[^\/]+/.exec(aFrom);
   if (!address) return;
   aFrom = address[0];
@@ -40,6 +40,13 @@ function appendPresence(aFrom, aPresenceType) {
       var input = arr[i].previous();
       input.src = src;
       input.alt = alt;
+      if (aPresenceType == "unavailable") {
+        input.removeClassName("online");
+        input.addClassName("offline");
+      } else {
+        input.removeClassName("offline");
+        input.addClassName("online");
+      }
       return;
     }
   }
@@ -56,6 +63,12 @@ function appendPresence(aFrom, aPresenceType) {
   }
   var elt = SPAN({className: "contact-name"}, aFrom);
   Event.observe(elt, "click", function(e) {
+    Musubi.send(<musubi type="get">
+                  <opencontanct>
+                    <account>{aTo}</account>
+                    <contact>{aFrom}</contact>
+                  </opencontanct>
+                </musubi>);
     Event.stop(e);
     });
   if (notfound) {
@@ -66,22 +79,32 @@ function appendPresence(aFrom, aPresenceType) {
 }
 
 function appendAccount(aAccountE4X) {
-  var elt = SPAN({className: "account-name"},
-              aAccountE4X.address.toString());
-  Event.observe(elt, "click", function(e) {
-    connect(aAccountE4X.address.toString());
+  var address = aAccountE4X.address.toString();
+  var elt0 = INPUT({type: "image", src: "offline.png", alt: "click here to connect", className: "offline"});
+  Event.observe(elt0, "click", function(e) {
+    if (e.target.hasClassName("offline")) {
+      connect(address);
+    } else {
+      disconnect(address);
+    }
     Event.stop(e);
   });
-  $("accounts").appendChild(
-    LI(INPUT({type: "image", src: "offline.png", alt: "click here to connect"}),
-       elt));
+  var elt1 = SPAN({className: "account-name"}, address);
+  Event.observe(elt1, "click", function(e) {
+    if (e.target.previous().hasClassName("offline")) {
+      connect(address);
+    } else {
+      disconnect(address);
+    }
+    Event.stop(e);
+  });
+  $("accounts").appendChild(LI(elt0, elt1));
 }
 
 function send() {
-  var xml = <message type="chat">
-	            <body>{$F("msg")}</body>
-            </message>;
-  Musubi.send(xml);
+  Musubi.send(<message type="chat">
+	              <body>{$F("msg")}</body>
+              </message>);
   appendMessage("me", $F("msg"));
   Field.clear("msg");
 }
@@ -106,7 +129,7 @@ function recv(xml) {
     }
     break;
   case "presence":
-    appendPresence(xml.@from.toString(), xml.@type.toString());
+    appendPresence(xml.@from.toString(), xml.@to.toString(), xml.@type.toString());
     break;
   case "musubi":
     if (xml.@type == "result" && xml.accounts.length()) {
@@ -122,6 +145,10 @@ function recv(xml) {
 
 function connect(aAddress) {
   Musubi.send(<musubi type="set"><connect>{aAddress}</connect></musubi>);
+}
+
+function disconnect(aAddress) {
+  Musubi.send(<musubi type="set"><disconnect>{aAddress}</disconnect></musubi>);
 }
 
 function openMsgURL(aFrom, aURL, aMessage) {
