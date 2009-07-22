@@ -1,0 +1,57 @@
+#board {
+  margin: 8px;
+}
+
+#commands {
+  margin: 8px;
+}
+
+table {
+  border: none;
+}
+
+td {
+  text-align: center;
+  vertical-align: center;
+  height: 30px;
+  width:  30px;
+}
+
+td.selected {
+  background-color: #777777;
+}
+
+.sprite {
+  background-image: url(chess.png);
+  background-repeat: no-repeat;
+}
+
+.sprite-bB0 { background-color: #d18b47; background-position: 0    0px; } 
+.sprite-bK0 { background-color: #d18b47; background-position: 0  -38px; } 
+.sprite-bN0 { background-color: #d18b47; background-position: 0  -76px; } 
+.sprite-bP0 { background-color: #d18b47; background-position: 0 -114px; } 
+.sprite-bQ0 { background-color: #d18b47; background-position: 0 -152px; } 
+.sprite-bR0 { background-color: #d18b47; background-position: 0 -190px; } 
+.sprite-wB0 { background-color: #d18b47; background-position: 0 -228px; } 
+.sprite-wK0 { background-color: #d18b47; background-position: 0 -266px; } 
+.sprite-wN0 { background-color: #d18b47; background-position: 0 -304px; } 
+.sprite-wP0 { background-color: #d18b47; background-position: 0 -342px; } 
+.sprite-wQ0 { background-color: #d18b47; background-position: 0 -380px; } 
+.sprite-wR0 { background-color: #d18b47; background-position: 0 -418px; }
+
+.sprite-bB1 { background-color: #ffce9e; background-position: 0    0px; } 
+.sprite-bK1 { background-color: #ffce9e; background-position: 0  -38px; } 
+.sprite-bN1 { background-color: #ffce9e; background-position: 0  -76px; } 
+.sprite-bP1 { background-color: #ffce9e; background-position: 0 -114px; } 
+.sprite-bQ1 { background-color: #ffce9e; background-position: 0 -152px; } 
+.sprite-bR1 { background-color: #ffce9e; background-position: 0 -190px; } 
+.sprite-wB1 { background-color: #ffce9e; background-position: 0 -228px; } 
+.sprite-wK1 { background-color: #ffce9e; background-position: 0 -266px; } 
+.sprite-wN1 { background-color: #ffce9e; background-position: 0 -304px; } 
+.sprite-wP1 { background-color: #ffce9e; background-position: 0 -342px; } 
+.sprite-wQ1 { background-color: #ffce9e; background-position: 0 -380px; } 
+.sprite-wR1 { background-color: #ffce9e; background-position: 0 -418px; }
+
+.sprite-000 { background-color: #d18b47; background-position: 0 -446px; }
+.sprite-001 { background-color: #ffce9e; background-position: 0 -446px; }
+
