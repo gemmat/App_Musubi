@@ -22,6 +22,8 @@ function recv(xml) {
           $("connection-security-ssl").checked = true;
         }
       }
+    } else if (xml.@type == "result" && xml.ok.length()) {
+      document.location.href = "account.html";
     }
   }
 }
