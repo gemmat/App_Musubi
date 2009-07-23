@@ -209,7 +209,7 @@ function makeTable(aFlip) {
 function main() {
   Musubi.init();
   Musubi.onRecv = recv;
-  makeTable(false);
+  makeTable(document.getElementById("flip").checked);
   document.getElementById("start").onclick = positionStart;
   document.getElementById("clear").onclick = positionClear;
   document.getElementById("prev") .onclick = movePrev;
