@@ -161,7 +161,17 @@ function recv(xml) {
   }
 }
 
-function main() {
+function flipTable(e) {
+  var arr = ["board", "bpieces", "wpieces"];
+  for (var i = 0; i < arr.length; i++) {
+    var elt = document.getElementById(arr[i]);
+    while (elt.firstChild) elt.removeChild(elt.firstChild);
+  }
+  makeTable(document.getElementById("flip").checked);
+  fill();
+}
+
+function makeTable(aFlip) {
   var ts = [[0,  8, 8, "board"],
             [8,  9, 7, "bpieces"],
             [9, 10, 7, "wpieces"]];
@@ -172,25 +182,39 @@ function main() {
     table.setAttribute("cellspacing", 0);
     for(var i = t[0]; i < t[1]; i++) {
       var tr = document.createElement("tr");
-      for(var j = 0; j < t[2]; j++) {
+	    for(var j = 0; j < t[2]; j++) {
+        var oi, oj;
+        if (aFlip) {
+          switch (s) {
+          case 0: oi = 7 - i; oj = 7 - j; break;
+          case 1: oi = i + 1; oj = j;     break;
+          case 2: oi = i - 1; oj = j;     break;
+          }
+        } else {
+          oi = i; oj = j;
+        }
         var td = document.createElement("td");
-        td.setAttribute("id", "c" + i + j);
+        td.setAttribute("id", "c" + oi + oj);
         td.onclick = (function onClickBoardFactory(i, j) {
                         return function(e) {onClickBoard(i, j);};
-                      })(i, j);
+                      })(oi, oj);
         tr.appendChild(td);
-      }
-      table.appendChild(tr);
+	    }
+	    table.appendChild(tr);
     }
     document.getElementById(t[3]).appendChild(table);
   }
+}
+
+function main() {
+  Musubi.init();
+  Musubi.onRecv = recv;
+  makeTable(false);
   document.getElementById("start").onclick = positionStart;
   document.getElementById("clear").onclick = positionClear;
   document.getElementById("prev") .onclick = movePrev;
   document.getElementById("next") .onclick = moveNext;
-
-  Musubi.init();
-  Musubi.onRecv = recv;
+  document.getElementById("flip") .onclick = flipTable;
   init("rnbqkbnrpppppppp________________________________PPPPPPPPRNBQKBNRkqrbnp__KQRBNP__");
 }
 
