@@ -1,0 +1,28 @@
+#canvas-container {
+  padding-bottom: 240px;
+  padding-right: 320px;
+}
+
+.canvas-img {
+  position: absolute;
+  left: 0px;
+  top:  0px;
+  border: lavender solid;
+}
+
+#canvas {
+  position: absolute;
+  left: 0px;
+  top:  0px;
+  border: lavender solid;
+}
+
+#commands-container {
+  text-align: center;
+  margin-top: 10px;
+  width: 248px;
+}
+
+#commands-container button {
+  margin-left: 20px;
+}
