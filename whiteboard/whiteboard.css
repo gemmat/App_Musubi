@@ -17,12 +17,30 @@
   border: lavender solid;
 }
 
-#commands-container {
+#tools-container {
   text-align: center;
   margin-top: 10px;
-  width: 248px;
+  width: 320px;
 }
 
-#commands-container button {
-  margin-left: 20px;
+ul#tools {
+  padding: 0;
+}
+
+ul#tools > li {
+  padding: 0;
+  margin-left:  4px;
+  margin-right: 4px;
+  list-style-type: none;
+  display: inline;
+}
+
+img.tool {
+  height: 48px;
+  width:  48px;
+  cursor: pointer;
+}
+
+#cursor-image {
+  position: absolute;
 }

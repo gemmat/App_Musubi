@@ -104,8 +104,8 @@ var Brushes = Class.create({
   }
 });
 
-var brush = new Brushes();
-var Tool = brush;
+var brush;
+var Tool;
 
 function drawDot(x, y, size, col, trg) {
   x = Math.floor(x) + 1; //prevent antialiasing of 1px dots
@@ -146,7 +146,7 @@ function recv(xml) {
 function send(e) {
   var dataurl = canvas.toDataURL();
   var xml = <message type="chat">
-              <body></body>
+              <body>{dataurl}</body>
               <html xmlns="http://jabber.org/protocol/xhtml-im">
                 <body xmlns="http://www.w3.org/1999/xhtml">
                   <img src={dataurl} width="320" height="240" alt="Canvas Chat image"/>
@@ -162,7 +162,7 @@ function clear(e) {
   c.clearRect(0, 0, cnvWidth, cnvHeight);
 }
 
-function newboard(e) {
+function newcnv(e) {
   c.fillRect(0, 0, cnvWidth, cnvHeight);
   send(e);
 }
@@ -177,12 +177,26 @@ function main() {
   canvas.observe("mouseup",   cUp);
   canvas.observe("mouseout",  cOut);
   c.lineWidth   = 1;
-  c.fillStyle   = "#FFFFFF";
   c.strokeStyle = "#000000";
+  c.fillStyle   = "#FFFFFF";
+  brush = new Brushes();
   Tool = brush;
+  $("brush").observe("click", function(e) {
+    c.lineWidth   = 1;
+    c.strokeStyle = "#000000";
+    Tool = brush;
+  });
+  $("eraser").observe("click", function(e) {
+    c.lineWidth   = 12;
+    c.strokeStyle = "#FFFFFF";
+    Tool = brush;
+  });
   $("send").observe("click",send);
   $("clear").observe("click", clear);
-  $("newboard").observe("click", newboard);
+  $("newcnv").observe("click", newcnv);
+  $("chat").observe("submit", function(e) {
+    Event.stop(e);
+  });
 }
 
 Event.observe(window, "load", main);
