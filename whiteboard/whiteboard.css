@@ -1,6 +1,6 @@
 #canvas-container {
-  padding-bottom: 240px;
-  padding-right: 320px;
+  padding-bottom: 480px;
+  padding-right: 640px;
 }
 
 .canvas-img {
@@ -15,12 +15,13 @@
   left: 0px;
   top:  0px;
   border: lavender solid;
+  cursor: none;
 }
 
 #tools-container {
   text-align: center;
   margin-top: 10px;
-  width: 320px;
+  width: 640px;
 }
 
 ul#tools {
@@ -29,8 +30,8 @@ ul#tools {
 
 ul#tools > li {
   padding: 0;
-  margin-left:  4px;
-  margin-right: 4px;
+  margin-left:  20px;
+  margin-right: 20px;
   list-style-type: none;
   display: inline;
 }
@@ -43,4 +44,8 @@ img.tool {
 
 #cursor-image {
   position: absolute;
+}
+
+#small {
+  display: none;
 }

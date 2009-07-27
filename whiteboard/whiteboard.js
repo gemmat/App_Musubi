@@ -1,7 +1,9 @@
 var canvas = "canvas element";
 var c = "canvas context";
-var cnvWidth  = 320;
-var cnvHeight = 240;
+var cnvWidth   = 640;
+var cnvHeight  = 480;
+var cnvWidthS  = 320;
+var cnvHeightS = 240;
 
 function getPos(e) {
   var elt = e.element();
@@ -118,7 +120,7 @@ var Cursor = Class.create({
       this.status = true;
     }
     this.img.style.left = m.x;
-    this.img.style.top  = m.y;
+    this.img.style.top  = m.y - 48;
   },
   out: function CursorOut(e) {
     this.img.style.display = "none";
@@ -167,12 +169,15 @@ function recv(xml) {
 }
 
 function send(e) {
-  var dataurl = canvas.toDataURL();
+  var small = $("small");
+  var sc = small.getContext("2d");
+  sc.drawImage(canvas, 0, 0, cnvWidthS, cnvHeightS);
+  var dataurl = small.toDataURL();
   var xml = <message type="chat">
               <body>{dataurl}</body>
               <html xmlns="http://jabber.org/protocol/xhtml-im">
                 <body xmlns="http://www.w3.org/1999/xhtml">
-                  <img src={dataurl} width="320" height="240" alt="Canvas Chat image"/>
+                  <img src={dataurl} width={cnvWidthS} height={cnvHeightS} alt="Canvas Chat image"/>
                 </body>
               </html>
             </message>;
@@ -182,6 +187,8 @@ function send(e) {
 }
 
 function clear(e) {
+  var sc = $("small").getContext("2d");
+  sc.clearRect(0, 0, cnvWidthS, cnvHeightS);
   c.clearRect(0, 0, cnvWidth, cnvHeight);
 }
 
