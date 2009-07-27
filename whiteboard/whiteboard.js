@@ -23,6 +23,7 @@ function getXY(e) {
 
 function cMove(e) {
   Tool.move(e);
+  cursor.move(e);
 }
 
 function cDown(e) {
@@ -35,6 +36,7 @@ function cUp(e) {
 
 function cOut(e) {
   Tool.out(e);
+  cursor.out(e);
 }
 
 var Brushes = Class.create({
@@ -104,7 +106,28 @@ var Brushes = Class.create({
   }
 });
 
+var Cursor = Class.create({
+  initialize: function CursorInitialize(aImg) {
+    this.img = aImg;
+    this.status = false;
+  },
+  move: function CursorMove(e) {
+    var m = e.pointer();
+    if (!this.status) {
+      this.img.style.display = "";
+      this.status = true;
+    }
+    this.img.style.left = m.x;
+    this.img.style.top  = m.y;
+  },
+  out: function CursorOut(e) {
+    this.img.style.display = "none";
+    this.status = false;
+  }
+});
+
 var brush;
+var cursor;
 var Tool;
 
 function drawDot(x, y, size, col, trg) {
@@ -139,7 +162,7 @@ function recv(xml) {
   var dataurl = xml.nsXhtmlIm::html..nsXhtml::img.@src;
   if (dataurl.length()) {
     var img = new Element("img", {className: "canvas-img", src: dataurl, width: cnvWidth, height: cnvHeight});
-    $("canvas-container").insertBefore(img, canvas);
+    $("canvas-history").appendChild(img);
   }
 }
 
@@ -172,31 +195,31 @@ function main() {
   Musubi.onRecv = recv;
   canvas = $("canvas");
   c = canvas.getContext("2d");
-  canvas.observe("mousemove", cMove);
-  canvas.observe("mousedown", cDown);
-  canvas.observe("mouseup",   cUp);
-  canvas.observe("mouseout",  cOut);
   c.lineWidth   = 1;
   c.strokeStyle = "#000000";
   c.fillStyle   = "#FFFFFF";
   brush = new Brushes();
   Tool = brush;
+  cursor = new Cursor($("cursor-image"));
+  canvas.observe("mousemove", cMove);
+  canvas.observe("mousedown", cDown);
+  canvas.observe("mouseup",   cUp);
+  canvas.observe("mouseout",  cOut);
   $("brush").observe("click", function(e) {
     c.lineWidth   = 1;
     c.strokeStyle = "#000000";
     Tool = brush;
+    cursor.img.src = $("brush").src;
   });
   $("eraser").observe("click", function(e) {
     c.lineWidth   = 12;
     c.strokeStyle = "#FFFFFF";
     Tool = brush;
+    cursor.img.src = $("eraser").src;
   });
-  $("send").observe("click",send);
-  $("clear").observe("click", clear);
+  $("send")  .observe("click", send);
+  $("clear") .observe("click", clear);
   $("newcnv").observe("click", newcnv);
-  $("chat").observe("submit", function(e) {
-    Event.stop(e);
-  });
 }
 
 Event.observe(window, "load", main);
