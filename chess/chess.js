@@ -132,7 +132,7 @@ function send() {
 
 function sendChessboard(cb) {
   var xml = <message type="chat">
-	            <body></body>
+	            <body>{cb}</body>
               <chessboard xmlns="http://sites.google.com/site/musubichat/chess">
                 {cb}
               </chessboard>
