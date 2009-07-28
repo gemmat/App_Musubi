@@ -10,6 +10,10 @@
   border: lavender solid;
 }
 
+.canvas-img-stamp {
+  position: absolute;
+}
+
 #canvas {
   position: absolute;
   left: 0px;
@@ -48,4 +52,21 @@ img.tool {
 
 #small {
   display: none;
+}
+
+#canvas-stamp-maker {
+  display: none;
+}
+
+img.stamp-img {
+  cursor: pointer;
+  border: solid blue;
+}
+
+#stamp-maker {
+  padding-left: 40px;
+}
+
+#stamp-history {
+  list-style-type: none;
 }

@@ -108,27 +108,47 @@ var Brushes = Class.create({
   }
 });
 
+var Stamp = Class.create({
+  initialize: function() {
+    this.imgsrc = "";
+  },
+  move: function(e) {
+  },
+  down: function(e) {
+    this.draw(e);
+  },
+  up: function(e) {
+  },
+  out: function(e) {
+  },
+  draw: function(e) {
+    var m = getXY(e);
+    sendStamp(this.imgsrc, m.x, m.y);
+  }
+});
+
 var Cursor = Class.create({
-  initialize: function CursorInitialize(aImg) {
+  initialize: function(aImg) {
     this.img = aImg;
     this.status = false;
   },
-  move: function CursorMove(e) {
+  move: function(e) {
     var m = e.pointer();
     if (!this.status) {
       this.img.style.display = "";
       this.status = true;
     }
     this.img.style.left = m.x;
-    this.img.style.top  = m.y - 48;
+    this.img.style.top  = m.y;
   },
-  out: function CursorOut(e) {
+  out: function(e) {
     this.img.style.display = "none";
     this.status = false;
   }
 });
 
 var brush;
+var stamp;
 var cursor;
 var Tool;
 
@@ -161,14 +181,20 @@ function drawDot(x, y, size, col, trg) {
 function recv(xml) {
   var nsXhtmlIm = new Namespace("http://jabber.org/protocol/xhtml-im");
   var nsXhtml = new Namespace("http://www.w3.org/1999/xhtml");
-  var dataurl = xml.nsXhtmlIm::html..nsXhtml::img.@src;
-  if (dataurl.length()) {
-    var img = new Element("img", {className: "canvas-img", src: dataurl, width: cnvWidth, height: cnvHeight});
+  var imgsrc   = xml.nsXhtmlIm::html..nsXhtml::img.@src;
+  var imgstyle = xml.nsXhtmlIm::html..nsXhtml::img.@style;
+  if (imgsrc.length()) {
+    var img = null;
+    if (imgstyle.length()) {
+      img = new Element("img", {className: "canvas-img-stamp", src: imgsrc, style: imgstyle});
+    } else {
+      img = new Element("img", {className: "canvas-img", src: imgsrc, width: cnvWidth, height: cnvHeight});
+    }
     $("canvas-history").appendChild(img);
   }
 }
 
-function send(e) {
+function sendCanvas(e) {
   var small = $("small");
   var sc = small.getContext("2d");
   sc.drawImage(canvas, 0, 0, cnvWidthS, cnvHeightS);
@@ -177,13 +203,26 @@ function send(e) {
               <body>{dataurl}</body>
               <html xmlns="http://jabber.org/protocol/xhtml-im">
                 <body xmlns="http://www.w3.org/1999/xhtml">
-                  <img src={dataurl} width={cnvWidthS} height={cnvHeightS} alt="Canvas Chat image"/>
+                  <img src={dataurl}/>
                 </body>
               </html>
             </message>;
   Musubi.send(xml);
   recv(xml);
   clear(e);
+}
+
+function sendStamp(aImgSrc, aX, aY) {
+  var xml = <message type="chat">
+              <body>{aImgSrc + "at(" + aX + "," + aY + ")"}</body>
+              <html xmlns="http://jabber.org/protocol/xhtml-im">
+                <body xmlns="http://www.w3.org/1999/xhtml">
+                  <img src={aImgSrc} style={"position: absolute; left:" + aX + "px; top:" + aY + "px;"}/>
+                </body>
+              </html>
+            </message>;
+  Musubi.send(xml);
+  recv(xml);
 }
 
 function clear(e) {
@@ -194,7 +233,44 @@ function clear(e) {
 
 function newcnv(e) {
   c.fillRect(0, 0, cnvWidth, cnvHeight);
-  send(e);
+  sendCanvas(e);
+}
+
+function stampMaker(e) {
+  var stampText = $("stamp-maker-src").value;
+  var stampImgSrc = "";
+  if (/^http:\/\//.test(stampText)) {
+    stampImgSrc = stampText;
+  } else {
+    var ct  = $("canvas-stamp-maker");
+    var ctc = ct.getContext("2d");
+    ctc.clearRect(0, 0, 240, 16);
+    ctc.save();
+    ctc.translate(0, 10);
+    ctc.mozTextStyle = "10pt sans serif";
+    ctc.fillStyle = "#000000";
+    ctc.mozDrawText(stampText);
+    ctc.restore();
+    stampImgSrc = ct.toDataURL();
+  }
+  var img = new Element("img", {className: "stamp-img", src: stampImgSrc});
+  img.observe("click", onClickStampImage);
+  var li = new Element("li");
+  li.appendChild(img);
+  var elt = $("stamp-history");
+  if (elt.firstChild) {
+    elt.insertBefore(li, elt.firstChild);
+  } else {
+    elt.appendChild(li);
+  }
+  $("stamp-maker-src").value = "";
+  Event.stop(e);
+}
+
+function onClickStampImage(e) {
+  stamp.imgsrc = e.target.src;
+  cursor.img.src = e.target.src;
+  Tool = stamp;
 }
 
 function main() {
@@ -206,6 +282,7 @@ function main() {
   c.strokeStyle = "#000000";
   c.fillStyle   = "#FFFFFF";
   brush = new Brushes();
+  stamp = new Stamp();
   Tool = brush;
   cursor = new Cursor($("cursor-image"));
   canvas.observe("mousemove", cMove);
@@ -224,9 +301,11 @@ function main() {
     Tool = brush;
     cursor.img.src = $("eraser").src;
   });
-  $("send")  .observe("click", send);
+  $("send")  .observe("click", sendCanvas);
   $("clear") .observe("click", clear);
   $("newcnv").observe("click", newcnv);
+  $("stamp-maker").observe("submit", stampMaker);
+  $("xxx0").observe("click", onClickStampImage);
 }
 
 Event.observe(window, "load", main);
