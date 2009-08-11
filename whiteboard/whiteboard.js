@@ -244,10 +244,10 @@ function stampMaker(e) {
   } else {
     var ct  = $("canvas-stamp-maker");
     var ctc = ct.getContext("2d");
-    ctc.clearRect(0, 0, 240, 16);
+    ctc.clearRect(0, 0, 240, 30);
     ctc.save();
-    ctc.translate(0, 10);
-    ctc.mozTextStyle = "10pt sans serif";
+    ctc.translate(0, 20);
+    ctc.mozTextStyle = "20pt sans serif";
     ctc.fillStyle = "#000000";
     ctc.mozDrawText(stampText);
     ctc.restore();
