@@ -3,9 +3,9 @@ function recv(xml) {
   case "message":
     break;
   case "musubi":
-    if (xml.@type == "result" && xml.accounts.length()) {
-      if (xml.accounts.account.length()) {
-        var a = xml.accounts.account[0];
+    if (xml.@type == "result" && xml.account.length()) {
+      if (xml.account.*.length()) {
+        var a = xml.account;
         $("userid")             .value = a.@id               .toString();
         $("username")           .value = a.name              .toString();
         $("domain")             .value = a.domain            .toString();
@@ -17,9 +17,9 @@ function recv(xml) {
         } else if (a.connectionSecurity.toString() == "1") {
           $("connection-security-ssl").checked = true;
         }
+      } else {
+        document.location.href = "account.html";
       }
-    } else if (xml.@type == "result" && xml.ok.length()) {
-      document.location.href = "account.html";
     }
   }
 }

@@ -1,104 +1,41 @@
 function appendMessage(aFrom, aMessage) {
   var history = $("history");
-  history.appendChild(DT(IMG({src: "romeo.png", alt: aFrom, title: aFrom}),
-                         aFrom));
+  history.appendChild(DT(aFrom));
   history.appendChild(DD(aMessage));
 }
 
 function appendXHTMLMessage(aFrom, aMessage) {
-  var elt = DD();
-  elt.innerHTML = aMessage;
   var history = $("history");
   history.appendChild(DT(aFrom));
-  history.appendChild(elt);
-}
-
-function appendURLMessage(aFrom, aURL, aMessage) {
-  var elt = A({href: aURL}, aMessage);
-  Event.observe(elt, "click", function(e) {
-    openMsgURL(aFrom, aURL, aMessage);
-    Event.stop(e);
-  });
-  var history = $("history");
-  history.appendChild(DT());
-  history.appendChild(DD(elt));
+  history.appendChild(DD().update(aMessage));
 }
 
 function appendPresence(aFrom, aTo, aPresenceType) {
-  var address = /^[^\/]+/.exec(aFrom);
-  if (!address) return;
-  aFrom = address[0];
-  var arr = [];
-  var src = "";
-  var alt = (aPresenceType == "unavailable") ? "offline" : "online";
-  var i, len;
-
-  arr = $$("span.account-name");
-  src = (aPresenceType == "unavailable") ? "offline.png" : "online.png";
-  for (i = 0, len = arr.length; i < len; i++) {
+  var arr = $$("span.account-item").concat($$("span.contact-item"));
+  for (var i = 0, len = arr.length; i < len; i++) {
     if (arr[i].textContent == aFrom) {
-      var input = arr[i].previous();
-      input.src = src;
-      input.alt = alt;
       if (aPresenceType == "unavailable") {
-        input.removeClassName("online");
-        input.addClassName("offline");
-      } else {
-        input.removeClassName("offline");
-        input.addClassName("online");
+        Element.remove(arr[i]);
       }
       return;
     }
   }
-  arr = $$("span.contact-name");
-  src = (aPresenceType == "unavailable") ? "offline.png" : "online.png";
-  var notfound = true;
-  for (i = 0, len = arr.length; i < len; i++) {
-    if (arr[i].textContent == aFrom) {
-      var img = arr[i].previous();
-      img.src = src;
-      img.alt = alt;
-      notfound = false;
-    }
-  }
-  var elt = SPAN({className: "contact-name"}, aFrom);
-  Event.observe(elt, "click", function(e) {
-    Musubi.send(<musubi type="get">
-                  <opencontanct>
-                    <account>{aTo}</account>
-                    <contact>{aFrom}</contact>
-                  </opencontanct>
-                </musubi>);
-    Event.stop(e);
-    });
-  if (notfound) {
-    $("contacts").appendChild(
-      LI(IMG({src: src, alt: alt}),
-         elt));
-  }
+  var elt = SPAN({className: "contact-item"}, aFrom);
+  Event.observe(elt, "click", openContact);
+  $("contacts").appendChild(LI(elt));
 }
 
-function appendAccount(aAccountE4X) {
-  var address = aAccountE4X.address.toString();
-  var elt0 = INPUT({type: "image", src: "offline.png", alt: "click here to connect", className: "offline"});
-  Event.observe(elt0, "click", function(e) {
-    if (e.target.hasClassName("offline")) {
-      connect(address);
-    } else {
-      disconnect(address);
-    }
+function appendAccount(aAddress) {
+  var elt = SPAN({className: "account-name"}, INPUT({type: "checkbox"}), aAddress);
+  Event.observe(elt, "click", function(e) {
+    e.target.down().checked ? disconnect(aAddress) : connect(aAddress);
     Event.stop(e);
   });
-  var elt1 = SPAN({className: "account-name"}, address);
-  Event.observe(elt1, "click", function(e) {
-    if (e.target.previous().hasClassName("offline")) {
-      connect(address);
-    } else {
-      disconnect(address);
-    }
+  Event.observe(elt.down(), "click", function(e) {
+    e.target.checked ? disconnect(aAddress) : connect(aAddress);
     Event.stop(e);
   });
-  $("accounts").appendChild(LI(elt0, elt1));
+  $("accounts").appendChild(LI(elt));
 }
 
 function send() {
@@ -121,12 +58,6 @@ function recv(xml) {
       appendMessage(xml.@from.toString(),
                     xml.body.toString());
     }
-    var nsJabberXOOB = new Namespace("jabber:x:oob");
-    if (xml.nsJabberXOOB::x.nsJabberXOOB::url.length()) {
-      appendURLMessage(xml.@from.toString(),
-                       xml.nsJabberXOOB::x.nsJabberXOOB::url.toString(),
-                       xml.nsJabberXOOB::x.nsJabberXOOB::desc.toString());
-    }
     break;
   case "presence":
     appendPresence(xml.@from.toString(), xml.@to.toString(), xml.@type.toString());
@@ -134,7 +65,23 @@ function recv(xml) {
   case "musubi":
     if (xml.@type == "result" && xml.accounts.length()) {
       for (var i = 0, len = xml.accounts.account.length(); i < len; i++) {
-        appendAccount(xml.accounts.account[i]);
+        appendAccount(xml.accounts.account[i].address.toString());
+      }
+    }
+    if (xml.@type == "result" && xml.connect.length()) {
+      var arr = $$("span.account-name");
+      for (var i = 0, len = arr.length; i < len; i++) {
+        if (arr[i].textContent == xml.connect) {
+          arr[i].down().checked = true;
+        }
+      }
+    }
+    if (xml.@type == "result" && xml.disconnect.length()) {
+      var arr = $$("span.account-name");
+      for (var i = 0, len = arr.length; i < len; i++) {
+        if (arr[i].textContent == xml.disconnect) {
+          arr[i].down().checked = false;
+        }
       }
     }
     break;
@@ -151,21 +98,14 @@ function disconnect(aAddress) {
   Musubi.send(<musubi type="set"><disconnect>{aAddress}</disconnect></musubi>);
 }
 
-function openMsgURL(aFrom, aURL, aMessage) {
-  Musubi.send(<musubi type="get">
-                 <urlmsg>
-                   <from>{aFrom}</from>
-                   <url>{aURL}</url>
-                   <desc>{aMessage}</desc>
-                 </urlmsg>
-               </musubi>);
-}
 
-function openMsgSender(evt) {
+function openContact(e) {
   Musubi.send(<musubi type="get">
-                 <sender>{evt.target.innerHTML}</sender>
-               </musubi>);
-  Event.stop(evt);
+                <opencontanct>
+                  <account>{aTo}</account>
+                  <contact>{aFrom}</contact>
+                </opencontanct>
+              </musubi>);
 }
 
 function recvTest0() {
@@ -200,11 +140,11 @@ function recvTest3() {
 }
 
 function recvTest4() {
-  recv(<presence from="juliet@localhost" type="unavailable"/>);
+  recv(<presence from="someone@localhost"/>);
 }
 
 function recvTest5() {
-  recv(<presence from="someone@localhost"/>);
+  recv(<presence from="juliet@localhost" type="unavailable"/>);
 }
 
 function recvTest6() {
@@ -233,6 +173,18 @@ function recvTest6() {
              <comment></comment>
            </account>
          </accounts>
+       </musubi>);
+}
+
+function recvTest7() {
+  recv(<musubi type="result">
+         <connect>romeo@localhost</connect>
+       </musubi>);
+}
+
+function recvTest8() {
+  recv(<musubi type="result">
+         <disconnect>romeo@localhost</disconnect>
        </musubi>);
 }
 

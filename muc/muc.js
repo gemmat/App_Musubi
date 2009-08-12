@@ -3,6 +3,11 @@ function joinRoom() {
   Musubi.send(xml);
 }
 
+function leaveRoom() {
+  var xml = <presence type="unavailable"/>;
+  Musubi.send(xml);
+}
+
 function send() {
   var xml = <message type="groupchat">
 	            <body>{$("msg").value}</body>
@@ -23,4 +28,5 @@ function main() {
   joinRoom();
 }
 
-window.onload = main;
+Event.observe(window, "load",   main);
+Event.observe(window, "unload", leaveRoom);

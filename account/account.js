@@ -64,15 +64,6 @@ function recv(xml) {
   }
 }
 
-function sendRequestAccounts() {
-  Musubi.send(<musubi type="get">
-                <accounts/>
-              </musubi>);
-  Musubi.send(<musubi type="get">
-                <defaultjid/>
-              </musubi>);
-}
-
 function recvTest0() {
   recv(<musubi type="result">
          <accounts>
@@ -98,6 +89,9 @@ function recvTest0() {
            </account>
          </accounts>
        </musubi>);
+}
+
+function recvTest1() {
   recv(<musubi type="result">
          <defaultjid>romeo@localhost</defaultjid>
        </musubi>);
@@ -107,5 +101,10 @@ Event.observe(window, "load", function (evt) {
   Builder.dump(window);
   Musubi.init();
   Musubi.onRecv = recv;
-  sendRequestAccounts();
+  Musubi.send(<musubi type="get">
+                <accounts/>
+              </musubi>);
+  Musubi.send(<musubi type="get">
+                <defaultjid/>
+              </musubi>);
 });
