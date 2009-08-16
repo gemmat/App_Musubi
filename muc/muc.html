@@ -10,43 +10,31 @@
     <div id="container">
       <div id="header">
         <h1>Much Ado About Nothing</h1>
-        <a href="http://blog.html.it/layoutgala/layout01.zip">download this layout</a>
       </div>
       <div id="wrapper">
         <div id="content">
-          <dl id="history">
-          </dl>
-          <form onsubmit="send(); return false;">
-            <textarea id="msg" rows="4" cols="80"></textarea>
+          <dl id="history"></dl>
+          <form id="form-msg"> 
+            <textarea id="msg" rows="4" cols="40"></textarea>
             <br/>
-            <input type="submit"></input>
+            <input type="submit" value="言う"></input>
           </form>
         </div>
       </div>
       <div id="navigation">
-        <p>
-          <strong>Participants</strong>
-        </p>
-        <ul>
-          <li>Alice</li>
-          <li>Bob</li>
-          <li>Charlie</li>
-          <li>Dauglas</li>
-          <li>Emily</li>
-        </ul>
-        <a href="#">Add Text to this section</a>
+        <p>ニックネームを入力せよ</p>
+        <form id="form-nickname">
+          <input type="text" id="nickname" name="nickname" size="12"></input>
+          <input type="submit" value="入室"></input>
+          <input type="button" id="leave-room" value="退室"></input>
+        </form>
       </div>
       <div id="extra">
-        <p>
-          <strong>2) Navigation here.</strong>
-          long long fill filler very fill column column silly filler very filler fill fill filler text fill very silly fill text filler silly silly filler fill very make fill column text column very very column fill fill very silly column silly silly fill fill long filler
-        </p>
-        <a href="#">Add Text to this section</a>
+        <p>参加者リスト</p>
+        <ul id="participants"></ul>
       </div>
       <div id="footer">
-        <p>The footer. You can go to the
-          <a href="http://blog.html.it/layoutgala/">index page</a>.
-        </p>
+        <p>Much Ado About Nothing</p>
       </div>
     </div>
   </body>

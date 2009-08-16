@@ -11,17 +11,21 @@ function appendXHTMLMessage(aFrom, aMessage) {
 }
 
 function appendPresence(aFrom, aTo, aPresenceType) {
-  var arr = $$("span.account-item").concat($$("span.contact-item"));
+  var arr = $$("span.contact-item");
+  var found = false;
   for (var i = 0, len = arr.length; i < len; i++) {
-    if (arr[i].textContent == aFrom) {
+    var m = /^([^\/]+)/.exec(arr[i].textContent);
+    var from = m ? m[1] : arr[i].textContent;
+    if (from == aFrom) {
       if (aPresenceType == "unavailable") {
         Element.remove(arr[i]);
       }
-      return;
+      found = true;
     }
   }
+  if (found || aPresenceType == "unavailable") return;
   var elt = SPAN({className: "contact-item"}, aFrom);
-  Event.observe(elt, "click", openContact);
+  Event.observe(elt, "click", openContact(aFrom, aTo));
   $("contacts").appendChild(LI(elt));
 }
 
@@ -99,13 +103,15 @@ function disconnect(aAddress) {
 }
 
 
-function openContact(e) {
-  Musubi.send(<musubi type="get">
-                <opencontanct>
-                  <account>{aTo}</account>
-                  <contact>{aFrom}</contact>
-                </opencontanct>
-              </musubi>);
+function openContact(aFrom, aTo) {
+  return function(e) {
+    Musubi.send(<musubi type="get">
+                  <opencontanct>
+                    <account>{aTo}</account>
+                    <contact>{aFrom}</contact>
+                  </opencontanct>
+                </musubi>);
+  };
 }
 
 function recvTest0() {
@@ -140,7 +146,12 @@ function recvTest3() {
 }
 
 function recvTest4() {
-  recv(<presence from="someone@localhost"/>);
+  recv(<presence from="chat@conference.jabber.org/Alice"/>);
+  recv(<presence from="chat@conference.jabber.org/Bob"/>);
+  recv(<presence from="chat@conference.jabber.org/Charlie"/>);
+  recv(<presence from="chat@conference.jabber.org/Dan"/>);
+  recv(<presence from="chat@conference.jabber.org/Emily"/>);
+  recv(<presence from="chat@conference.jabber.org/Fey"/>);
 }
 
 function recvTest5() {
@@ -148,6 +159,10 @@ function recvTest5() {
 }
 
 function recvTest6() {
+  recv(<presence from="chat@conference.jabber.org" type="unavailable"/>);
+}
+
+function recvTest7() {
   recv(<musubi type="result">
          <accounts>
            <account id="3">
@@ -176,13 +191,13 @@ function recvTest6() {
        </musubi>);
 }
 
-function recvTest7() {
+function recvTest8() {
   recv(<musubi type="result">
          <connect>romeo@localhost</connect>
        </musubi>);
 }
 
-function recvTest8() {
+function recvTest9() {
   recv(<musubi type="result">
          <disconnect>romeo@localhost</disconnect>
        </musubi>);

@@ -14,7 +14,7 @@ function recv(xml) {
     var df = document.createDocumentFragment();
     for (var i = 0, len = items.length(); i < len; i++) {
       var li = new Element("li");
-      var a  = new Element("a", {href: "xmpp:" + items[i].@jid.toString() + "/" + "Alice" + "?join" + ";href=muc.html"}).update(items[i].@name.toString());
+      var a  = new Element("a", {href: "xmpp:" + items[i].@jid.toString() + "?share;href=muc.html"}).update(items[i].@name.toString());
       li.appendChild(a);
       df.appendChild(li);
     }
@@ -53,6 +53,14 @@ function recvTest0() {
 function main() {
   Musubi.init();
   Musubi.onRecv = recv;
+  Event.observe($("form-create-room"), "submit", function(e) {
+    var room = $("room").value;
+    var m = /^xmpp:\/\/[^\/]+\/([^\/\?@]+)/.exec(document.location.href);
+    if (room && m) {
+      document.location.href = "xmpp:" + room + "@" + m[1] + "?share;href=muc.html?create";
+    }
+    Event.stop(e);
+  });
   send();
 }
 
