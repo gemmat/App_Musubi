@@ -21,8 +21,8 @@ function leaveRoom() {
 }
 
 function appendMessage(aFrom, aBody) {
-  var m = /\/(.+)$/.exec(aFrom);
-  if (m) aFrom = m[1];
+  var o = Musubi.parseJID(aFrom);
+  if (o) aFrom = o.resource;
   var history = $("history");
   history.appendChild(new Element("dt").update(aFrom));
   history.appendChild(new Element("dd").update(aBody));
@@ -53,15 +53,19 @@ function recv(xml) {
       break;
     }
     var participants = $("participants");
-    var from = xml.@from.toString();
-    var nick = /\/(.*)$/.exec(from);
+    var o = Musubi.parseJID(xml.@from.toString());
+    var nick = o ? o.resource : xml.@from.toString();
+    var arr = [];
+    participants.childElements().forEach(function(x) {
+      if (x.textContent == nick) arr.push(x);
+    });
     if (xml.@type == "unavailable") {
-      participants.descendants().forEach(function(x) {
-        if (x.textContent == nick) Element.remove(x);
-      });
-      break;
+      arr.forEach(function(x) {Element.remove(x);});
+    } else {
+      if (!arr.length) {
+        participants.appendChild(new Element("li").update(nick));
+      }
     }
-    participants.appendChild(new Element("li").update(nick ? nick[1] : from));
     break;
   }
 }
