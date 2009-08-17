@@ -11,22 +11,51 @@ function appendXHTMLMessage(aFrom, aMessage) {
 }
 
 function appendPresence(aFrom, aTo, aPresenceType) {
-  var arr = $$("span.contact-item");
-  var found = false;
-  for (var i = 0, len = arr.length; i < len; i++) {
-    var m = /^([^\/]+)/.exec(arr[i].textContent);
-    var from = m ? m[1] : arr[i].textContent;
-    if (from == aFrom) {
-      if (aPresenceType == "unavailable") {
-        Element.remove(arr[i]);
-      }
-      found = true;
+  var contacts = $("contacts");
+  switch (aPresenceType) {
+  case "unavailable":
+    var arr = $$("span.contact-item");
+    for (var i = 0, len = arr.length; i < len; i++) {
+      var m = /^([^\/]+)/.exec(arr[i].textContent);
+      var from = m ? m[1] : arr[i].textContent;
+      if (from == aFrom) Element.remove(arr[i]);
     }
+    break;
+  case "subscribe":
+    var buttonSubscribed   = BUTTON("OK");
+    var buttonUnsubscribed = BUTTON("NO");
+    var elt0 = LI(SPAN({className: "contact-item-subscribe"},
+                       aFrom + "が友達になりたいそうです",
+                       buttonSubscribed,
+                       buttonUnsubscribed));
+    Event.observe(buttonSubscribed, "click", function(e) {
+      Musubi.send(<presence from={aTo} to={aFrom} type="subscribed"/>);
+      Element.remove(elt0);
+      });
+    Event.observe(buttonUnsubscribed, "click", function(e) {
+      Musubi.send(<presence from={aTo} to={aFrom} type="unsubscribe"/>);
+      Element.remove(elt0);
+      });
+    contacts.appendChild(elt0);
+    break;
+  case "subscribed":
+    var elt1 = LI(SPAN({className: "contact-item-subscribed"},
+                       aFrom + "はOKだそうです。"));
+    setTimeout(function(e) {Element.remove(elt1);}, 5000);
+    contacts.appendChild(elt1);
+    break;
+  case "unsubscribed":
+    var elt2 = LI(SPAN({className: "contact-item-unsubscribed"},
+                       aFrom + "はNOだそうです。"));
+    setTimeout(function(e) {Element.remove(elt2);}, 5000);
+    contacts.appendChild(elt2);
+    break;
+  default:
+    var elt3 = LI(SPAN({className: "contact-item"}, aFrom));
+    Event.observe(elt3, "click", openContact(aFrom, aTo));
+    contacts.appendChild(elt3);
+    break;
   }
-  if (found || aPresenceType == "unavailable") return;
-  var elt = SPAN({className: "contact-item"}, aFrom);
-  Event.observe(elt, "click", openContact(aFrom, aTo));
-  $("contacts").appendChild(LI(elt));
 }
 
 function appendAccount(aAddress) {
@@ -43,10 +72,11 @@ function appendAccount(aAddress) {
 }
 
 function send() {
+  var value = $F("msg");
   Musubi.send(<message type="chat">
-	              <body>{$F("msg")}</body>
+	              <body>{value}</body>
               </message>);
-  appendMessage("me", $F("msg"));
+  appendMessage("me", value);
   Field.clear("msg");
 }
 
@@ -64,7 +94,9 @@ function recv(xml) {
     }
     break;
   case "presence":
-    appendPresence(xml.@from.toString(), xml.@to.toString(), xml.@type.toString());
+    appendPresence(xml.@from.toString(),
+                   xml.@to.toString(),
+                   xml.@type.toString());
     break;
   case "musubi":
     if (xml.@type == "result" && xml.accounts.length()) {
@@ -115,54 +147,6 @@ function openContact(aFrom, aTo) {
 }
 
 function recvTest0() {
-  recv(<message from="romeo@localhost">
-         <body>"hello, world."</body>
-       </message>);
-}
-
-function recvTest1() {
-  recv(<message from="romeo@localhost">
-         <body>hello world</body>
-         <x xmlns="jabber:x:oob">
-           <url>"http://www.google.co.jp"</url>
-           <desc>"Google"</desc>
-         </x>
-       </message>);
-}
-
-function recvTest2() {
-  recv(<message from="romeo@localhost">
-         <body>hello world</body>
-         <html xmlns="http://jabber.org/protocol/xhtml-im">
-           <body xmlns="http://www.w3.org/1999/xhtml">
-             <p style="font-weight:bold">hi!</p>
-           </body>
-         </html>
-       </message>);
-}
-
-function recvTest3() {
-  recv(<presence from="juliet@localhost"/>);
-}
-
-function recvTest4() {
-  recv(<presence from="chat@conference.jabber.org/Alice"/>);
-  recv(<presence from="chat@conference.jabber.org/Bob"/>);
-  recv(<presence from="chat@conference.jabber.org/Charlie"/>);
-  recv(<presence from="chat@conference.jabber.org/Dan"/>);
-  recv(<presence from="chat@conference.jabber.org/Emily"/>);
-  recv(<presence from="chat@conference.jabber.org/Fey"/>);
-}
-
-function recvTest5() {
-  recv(<presence from="juliet@localhost" type="unavailable"/>);
-}
-
-function recvTest6() {
-  recv(<presence from="chat@conference.jabber.org" type="unavailable"/>);
-}
-
-function recvTest7() {
   recv(<musubi type="result">
          <accounts>
            <account id="3">
@@ -191,16 +175,68 @@ function recvTest7() {
        </musubi>);
 }
 
-function recvTest8() {
+function recvTest1() {
   recv(<musubi type="result">
          <connect>romeo@localhost</connect>
        </musubi>);
 }
 
-function recvTest9() {
+function recvTest2() {
   recv(<musubi type="result">
          <disconnect>romeo@localhost</disconnect>
        </musubi>);
+}
+
+function recvTest3() {
+  recv(<message from="romeo@localhost">
+         <body>"hello, world."</body>
+       </message>);
+}
+
+function recvTest4() {
+  recv(<message from="romeo@localhost">
+         <body>hello world</body>
+         <x xmlns="jabber:x:oob">
+           <url>http://www.google.co.jp</url>
+           <desc>Google</desc>
+         </x>
+       </message>);
+}
+
+function recvTest5() {
+  recv(<message from="romeo@localhost">
+         <body>hi!</body>
+         <html xmlns="http://jabber.org/protocol/xhtml-im">
+           <body xmlns="http://www.w3.org/1999/xhtml">
+             <p style="font-weight:bold">hi!</p>
+           </body>
+         </html>
+       </message>);
+}
+
+function recvTest6() {
+  recv(<presence from="juliet@localhost"/>);
+}
+
+function recvTest7() {
+  recv(<presence from="chat@conference.jabber.org/Alice"/>);
+  recv(<presence from="chat@conference.jabber.org/Bob"/>);
+  recv(<presence from="chat@conference.jabber.org/Charlie"/>);
+  recv(<presence from="chat@conference.jabber.org/Dan"/>);
+  recv(<presence from="chat@conference.jabber.org/Emily"/>);
+  recv(<presence from="chat@conference.jabber.org/Fey"/>);
+}
+
+function recvTest8() {
+  recv(<presence from="juliet@localhost" type="unavailable"/>);
+}
+
+function recvTest9() {
+  recv(<presence from="chat@conference.jabber.org" type="unavailable"/>);
+}
+
+function recvTest10() {
+  recv(<presence from="someone@localhost" type="subscribe"/>);
 }
 
 Event.observe(window, "load", function (e) {

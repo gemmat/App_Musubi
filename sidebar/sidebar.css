@@ -2,7 +2,7 @@ div#accounts-container {
   border: medium solid;
 }
 
-div#accounts-link {
+div#accounts-config {
   text-align: right;
 }
 
@@ -26,6 +26,11 @@ div#contacts-container {
   border: medium solid;
 }
 
+div#contacts-config {
+  text-align: right;
+}
+
+
 ul#contacts {
   padding-left: 0px;
 }
@@ -34,7 +39,7 @@ ul#contacts > li {
   list-style-type: none;
 }
 
-ul#contacts > li > span {
+ul#contacts > li > span.contact-item {
   position: relative;
   top: -3px;
   text-decoration: underline;
