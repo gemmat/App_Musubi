@@ -58,10 +58,10 @@ var Musubi = {
     }
     function parseResource(aString) {
       var m;
-      var reResource = /^\/([^\/\?#]+)/;
+      var reResource = /^\/([^\/\?#]*)/;
       m = reResource.exec(aString);
       if (m) return [m[1], aString.slice(m[0].length)];
-      return ["", aString];
+      return [null, aString];
     }
     function parseQuery(aString) {
       var m;
@@ -83,7 +83,7 @@ var Musubi = {
       account:  account,
       sendto:   sendto,
       resource: resource,
-      jid:      sendto + (resource ? "/" + resource : ""),
+      jid:      sendto + (resource == null ? "" : "/" + resource),
       query:    q
     };
   },

@@ -1,7 +1,8 @@
-function appendAccount(aAddress) {
-  var elt = A({href: "xmpp://" + aAddress + "/" + aAddress + "?share;href=sidebar2.html"}, aAddress);
+function appendAccount(aAddress, aJID) {
+  var elt = A({href: "xmpp://" + aAddress + "/" + aJID + "?share;href=sidebar2.html"}, aJID);
   Event.observe(elt, "click", function(e) {
     connect(e.target.textContent);
+    //TODO Event.stop(e) and wait the connection is to be online.
   });
   $("accounts").appendChild(LI(elt));
 }
@@ -11,7 +12,8 @@ function recv(xml) {
   case "musubi":
     if (xml.@type == "result" && xml.accounts.length()) {
       for (var i = 0, len = xml.accounts.account.length(); i < len; i++) {
-        appendAccount(xml.accounts.account[i].address.toString());
+        appendAccount(xml.accounts.account[i].address.toString(),
+                      xml.accounts.account[i].jid    .toString());
       }
     }
     break;
@@ -39,8 +41,8 @@ function recvTest0() {
            <account id="4">
              <name>teruakigemma</name>
              <domain>gmail</domain>
-             <resource>Musubi</resource>
-             <jid>teruakigemma@gmail/Musubi</jid>
+             <resource></resource>
+             <jid>teruakigemma@gmail/</jid>
              <address>teruakigemma@gmail.com</address>
              <connectionHost>talk.google.com</connectionHost>
              <connectionPort>443</connectionPort>
