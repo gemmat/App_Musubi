@@ -83,7 +83,7 @@ var Musubi = {
       account:  account,
       sendto:   sendto,
       resource: resource,
-      jid:      sendto + (resource == null ? "" : "/" + resource),
+      to:       sendto + (resource == null ? "" : "/" + resource),
       query:    q
     };
   },
