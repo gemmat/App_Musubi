@@ -12,10 +12,10 @@ function recv(xml) {
         $("resource")           .value = a.resource          .toString();
         $("connection-host")    .value = a.connectionHost    .toString();
         $("connection-port")    .value = a.connectionPort    .toString();
-        if (a.connectionSecurity.toString() == "0") {
-          $("connection-security-none").checked = true;
-        } else if (a.connectionSecurity.toString() == "1") {
-          $("connection-security-ssl").checked = true;
+        if (a.connectionScrty.toString() == "0") {
+          $("connection-scrty-none").checked = true;
+        } else if (a.connectionScrty.toString() == "1") {
+          $("connection-scrty-ssl").checked = true;
         }
       } else {
         document.location.href = "account.html";

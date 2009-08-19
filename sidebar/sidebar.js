@@ -1,5 +1,5 @@
-function appendAccount(aAddress, aJID) {
-  var elt = A({href: "xmpp://" + aAddress + "/" + aJID + "?share;href=sidebar2.html"}, aJID);
+function appendAccount(aAccount, aTo) {
+  var elt = A({href: "xmpp://" + aAccount + "/" + aTo + "?share;href=sidebar2.html"}, aTo);
   Event.observe(elt, "click", function(e) {
     connect(e.target.textContent);
     //TODO Event.stop(e) and wait the connection is to be online.
@@ -12,16 +12,16 @@ function recv(xml) {
   case "musubi":
     if (xml.@type == "result" && xml.accounts.length()) {
       for (var i = 0, len = xml.accounts.account.length(); i < len; i++) {
-        appendAccount(xml.accounts.account[i].address.toString(),
-                      xml.accounts.account[i].jid    .toString());
+        appendAccount(xml.accounts.account[i].barejid.toString(),
+                      xml.accounts.account[i].fulljid.toString());
       }
     }
     break;
   }
 }
 
-function connect(aAddress) {
-  Musubi.send(<musubi type="set"><connect>{aAddress}</connect></musubi>);
+function connect(aAccount) {
+  Musubi.send(<musubi type="set"><connect>{aAccount}</connect></musubi>);
 }
 
 function recvTest0() {
@@ -31,22 +31,22 @@ function recvTest0() {
              <name>romeo</name>
              <domain>localhost</domain>
              <resource>Musubi</resource>
-             <jid>romeo@localhost/Musubi</jid>
-             <address>romeo@localhost</address>
+             <barejid>romeo@localhost</barejid>
+             <fulljid>romeo@localhost/Musubi</fulljid>
              <connectionHost>localhost</connectionHost>
              <connectionPort>5223</connectionPort>
-             <connectionSecurity>0</connectionSecurity>
+             <connectionScrty>0</connectionScrty>
              <comment></comment>
            </account>
            <account id="4">
              <name>teruakigemma</name>
              <domain>gmail</domain>
              <resource></resource>
-             <jid>teruakigemma@gmail/</jid>
-             <address>teruakigemma@gmail.com</address>
+             <barejid>teruakigemma@gmail</barejid>
+             <fulljid>teruakigemma@gmail/</fulljid>
              <connectionHost>talk.google.com</connectionHost>
              <connectionPort>443</connectionPort>
-             <connectionSecurity>1</connectionSecurity>
+             <connectionScrty>1</connectionScrty>
              <comment></comment>
            </account>
          </accounts>

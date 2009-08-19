@@ -7,7 +7,6 @@ function recv(xml) {
       var df = document.createDocumentFragment();
       for (var i = 0; i < xml.accounts.account.length(); i++) {
         var account = xml.accounts.account[i];
-        var accountJID = account.name.toString() + "@" + account.domain.toString();
         var service = {};
         switch (account.domain.toString()) {
         case "gmail":       //FALLTHROUGH
@@ -33,12 +32,12 @@ function recv(xml) {
                           <defaultjid>{jid}</defaultjid>
                         </musubi>);
           };
-        })(accountJID));
+        })(account.barejid.toString()));
         df.appendChild(
           LI(A({href: service.href + "?id=" + account.@id},
                UL({className: "service"},
                   LI(IMG({src: service.imgsrc, alt: service.imgalt})),
-                  LI(SPAN({className: "account-jid"}, accountJID),
+                  LI(SPAN({className: "account-jid"}, account.barejid.toString()),
                      SPAN("/" + account.resource.toString())),
                   LI(service.imgalt))),
              imgDefaultJID));
@@ -71,20 +70,22 @@ function recvTest0() {
              <name>romeo</name>
              <domain>localhost</domain>
              <resource>Musubi</resource>
-             <jid>romeo@localhost</jid>
+             <barejid>romeo@localhost</barejid>
+             <fulljid>romeo@localhost/Musubi</fulljid>
              <connectionHost>localhost</connectionHost>
              <connectionPort>5223</connectionPort>
-             <connectionSecurity>0</connectionSecurity>
+             <connectionScrty>0</connectionScrty>
              <comment></comment>
            </account>
            <account id="4">
              <name>teruakigemma</name>
              <domain>gmail</domain>
-             <resource>Musubi</resource>
-             <jid>teruakigemma@gmail</jid>
+             <resource></resource>
+             <barejid>teruakigemma@gmail</barejid>
+             <fulljid>teruakigemma@gmail/</fulljid>
              <connectionHost>talk.google.com</connectionHost>
              <connectionPort>443</connectionPort>
-             <connectionSecurity>1</connectionSecurity>
+             <connectionScrty>1</connectionScrty>
              <comment></comment>
            </account>
          </accounts>

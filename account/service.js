@@ -11,12 +11,12 @@ function send() {
                   <name>{o["username"]}</name>
                   <domain>{o["domain"]}</domain>
                   <resource>{o["resource"]}</resource>
-                  <jid>{o["username"] + "@" + o["domain"] + "/" + o["resource"]}</jid>
-                  <address>{o["username"] + "@" + o["domain"]}</address>
+                  <barejid>{o["username"] + "@" + o["domain"]}</barejid>
+                  <fulljid>{o["username"] + "@" + o["domain"] + "/" + o["resource"]}</fulljid>
                   <password>{o["password"]}</password>
-                  <connectionHost>{o["connection-host"]}</connectionHost>
-                  <connectionPort>{o["connection-port"]}</connectionPort>
-                  <connectionSecurity>{o["connection-security"]}</connectionSecurity>
+                   <connectionHost>{o["connection-host"]}</connectionHost>
+                   <connectionPort>{o["connection-port"]}</connectionPort>
+                  <connectionScrty>{o["connection-scrty"]}</connectionScrty>
                   <comment></comment>
                 </account>
               </musubi>);
@@ -29,11 +29,11 @@ function recvTest0() {
            <name>romeo</name>
            <domain>localhost</domain>
            <resource></resource>
-           <jid>romeo@localhost/</jid>
-           <address>romeo@localhost</address>
+           <barejid>romeo@localhost</barejid>
+           <fulljid>romeo@localhost/</fulljid>
            <connectionHost>localhost</connectionHost>
            <connectionPort>5223</connectionPort>
-           <connectionSecurity>0</connectionSecurity>
+           <connectionScrty>0</connectionScrty>
            <comment></comment>
          </account>
        </musubi>);

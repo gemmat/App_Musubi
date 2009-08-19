@@ -98,7 +98,7 @@ var Musubi = {
       name: name,
       host: host,
       resource: resource,
-      jid: name + "@" + host,
+      barejid: name + "@" + host,
       fulljid: name + "@" + host + "/" + resource
     };
   }

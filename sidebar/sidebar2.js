@@ -48,10 +48,11 @@ function appendPresence(aFrom, aTo, aPresenceType) {
     $("contacts-message").appendChild(elt2);
     break;
   default:
-    var p = Musubi.parseJID(aFrom);
     var o = Musubi.parseURI(document.location.href);
-    if (o && o.account == (p ? p.jid : aFrom)) break;
-    if (findContacts(aFrom).length) break;
+    var p = Musubi.parseJID(aFrom);
+    if (!o || !p) break;
+    if (o.account == p.barejid) break;
+    if (findContacts(p.fulljid).length) break;
     var elt3 = LI(SPAN({className: "contact-item"}, aFrom));
     Event.observe(elt3, "click", openContact(aFrom, aTo));
     $("contacts").appendChild(elt3);
@@ -64,13 +65,14 @@ function findContacts(aFrom) {
   var res = [];
   var arr = $("contacts").childElements();
   var p0 = Musubi.parseJID(aFrom);
+  if (!p0) return res;
   for (var i = 0, len = arr.length; i < len; i++) {
-    var contactAddress = arr[i].down().textContent;
+    var p1 = Musubi.parseJID(arr[i].down().textContent);
+    if (!p1) continue;
     if (p0.resource == null) {
-      var p1 = Musubi.parseJID(contactAddress);
-      if (p0.jid == (p1 ? p1.jid : contactAddress)) res.push(arr[i]);
+      if (p0.barejid == p1.barejid) res.push(arr[i]);
     } else {
-      if (p0.fulljid == contactAddress) res.push(arr[i]);
+      if (p0.fulljid == p1.fulljid) res.push(arr[i]);
     }
   }
   return res;
@@ -91,10 +93,10 @@ function syncContactsWithSendtoOptions() {
 function appendRoster(aFrom, aItems) {
   var df = document.createDocumentFragment();
   for (var i = 0, len = aItems.length(); i < len; i++) {
-    var jid = aItems[i].@jid.toString();
-    if (findContacts(jid).length) continue;
-    var elt = LI(SPAN({className: "contact-item"}, jid));
-    Event.observe(elt, "click", openContact(jid, aFrom));
+    var itemjid = aItems[i].@jid.toString();
+    if (findContacts(itemjid).length) continue;
+    var elt = LI(SPAN({className: "contact-item"}, itemjid));
+    Event.observe(elt, "click", openContact(itemjid, aFrom));
     df.appendChild(elt);
   }
   $("contacts").appendChild(df);
@@ -104,7 +106,7 @@ function appendRoster(aFrom, aItems) {
 function send() {
   var value = $F("msg");
   Musubi.send(<message type="chat">
-	              <body>{value}</body>
+                <body>{value}</body>
               </message>);
   appendMessage("me", value);
   Field.clear("msg");
@@ -229,7 +231,7 @@ Event.observe(window, "load", function (e) {
     Musubi.send(<musubi type="get">
                   <cachedpresences from={o.account}/>
                 </musubi>);
-    Musubi.send(<iq from={o.jid} to={o.account} type="get">
+    Musubi.send(<iq from={o.to} to={o.account} type="get">
                   <query xmlns="jabber:iq:roster"/>
                 </iq>);
     $("account-container").appendChild(P(A({href: document.location.href},

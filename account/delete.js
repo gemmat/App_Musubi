@@ -68,20 +68,22 @@ function recvTest0() {
              <name>romeo</name>
              <domain>localhost</domain>
              <resource>Musubi</resource>
-             <jid>romeo@localhost</jid>
+             <barejid>romeo@localhost</barejid>
+             <fulljid>romeo@localhost/Musubi</fulljid>
              <connectionHost>localhost</connectionHost>
              <connectionPort>5223</connectionPort>
-             <connectionSecurity>0</connectionSecurity>
+             <connectionScrty>0</connectionScrty>
              <comment></comment>
            </account>
            <account id="4">
              <name>teruakigemma</name>
              <domain>gmail</domain>
-             <resource>Musubi</resource>
-             <jid>teruakigemma@gmail</jid>
+             <resource></resource>
+             <barejid>teruakigemma@gmail</barejid>
+             <fulljid>teruakigemma@gmail/</fulljid>
              <connectionHost>talk.google.com</connectionHost>
              <connectionPort>443</connectionPort>
-             <connectionSecurity>1</connectionSecurity>
+             <connectionScrty>1</connectionScrty>
              <comment></comment>
            </account>
          </accounts>
