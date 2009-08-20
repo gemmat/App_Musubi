@@ -7,8 +7,8 @@ function recv(xml) {
       if (xml.account.*.length()) {
         var a = xml.account;
         var p = Musubi.parseJID(a.barejid.toString());
-        $("username")           .value = p.name;
-        $("domain")             .value = p.host;
+        $("username")           .value = p.node;
+        $("domain")             .value = p.domain;
         $("resource")           .value = a.resource          .toString();
         $("connection-host")    .value = a.connectionHost    .toString();
         $("connection-port")    .value = a.connectionPort    .toString();

@@ -10,24 +10,7 @@ function recv(xml) {
       for (var i = 0; i < xml.accounts.account.length(); i++) {
         var account = xml.accounts.account[i];
         var p = Musubi.parseJID(account.barejid.toString());
-        var service = {};
-        switch (p.host) {
-        case "gmail":       //FALLTHROUGH
-        case "googlemail":
-          service = {
-                     href:    "gtalk.html",
-                     imgsrc:  "gtalk.png",
-                     imgalt:  "Google Talk"
-                    };
-          break;
-        default:
-          service = {
-                     href:    "jabber.html",
-                     imgsrc:  "jabber.png",
-                     imgalt:  "Jabber/XMPP"
-                    };
-          break;
-        }
+        var service = makeServiceInfo(p.domain);
         var elt = SPAN({className: "delete-button"},
                        UL({className: "service"},
                           LI(IMG({src: service.imgsrc, alt: service.imgalt})),

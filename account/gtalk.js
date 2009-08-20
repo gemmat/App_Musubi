@@ -7,10 +7,10 @@ function recv(xml) {
       if (xml.account.*.length()) {
         var a = xml.account;
         var p = Musubi.parseJID(a.barejid.toString());
-        $("username")           .value = p.name;
-        if (p.host == "gmail.com") {
+        $("username")           .value = p.node;
+        if (p.domain == "gmail.com") {
           $("domain-gmail").selected = true;
-        } else if (p.host == "googlemail.com") {
+        } else if (p.domain == "googlemail.com") {
           $("domain-googlemail").selected = true;
         }
         $("resource")           .value = a.resource          .toString();

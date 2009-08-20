@@ -1,3 +1,21 @@
+function makeServiceInfo(aDomain) {
+  switch (aDomain) {
+  case "gmail":       //FALLTHROUGH
+  case "googlemail":
+    return {
+      href:    "gtalk.html",
+      imgsrc:  "gtalk.png",
+      imgalt:  "Google Talk"
+    };
+  default:
+    return {
+      href:    "jabber.html",
+      imgsrc:  "jabber.png",
+      imgalt:  "Jabber/XMPP"
+    };
+  }
+}
+
 function sendReadAllAccount() {
   Musubi.send(<musubi type="get">
                 <accounts/>

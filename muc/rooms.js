@@ -57,7 +57,7 @@ function main() {
     var room = $("room").value;
     var o = Musubi.parseURI(document.location.href);
     if (room && o) {
-      document.location.href = "xmpp:" + room + "@" + o.host + "?share;href=muc.html?create";
+      document.location.href = "xmpp:" + room + "@" + o.domain + "?share;href=muc.html?create";
     }
     Event.stop(e);
   });

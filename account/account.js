@@ -7,25 +7,8 @@ function recv(xml) {
       var df = document.createDocumentFragment();
       for (var i = 0; i < xml.accounts.account.length(); i++) {
         var account = xml.accounts.account[i];
-        var service = {};
         var p = Musubi.parseJID(account.barejid.toString());
-        switch (p.host) {
-        case "gmail":       //FALLTHROUGH
-        case "googlemail":
-          service = {
-                     href:    "gtalk.html",
-                     imgsrc:  "gtalk.png",
-                     imgalt:  "Google Talk"
-                    };
-          break;
-        default:
-          service = {
-                     href:    "jabber.html",
-                     imgsrc:  "jabber.png",
-                     imgalt:  "Jabber/XMPP"
-                    };
-          break;
-        }
+        var service = makeServiceInfo(p.domain);
         var imgDefaultAccount = IMG({src: "homeGray.png", className: "account-set-defaultAccount"});
         Event.observe(imgDefaultAccount, "click", (function(barejid) {
           return function(e) {
