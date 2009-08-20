@@ -1,21 +1,20 @@
-function sendRequestUserInfo(aID) {
+function sendRequestUserInfo(aBarejid) {
   Musubi.send(<musubi type="get">
-                <account id={aID}/>
+                <account>
+                  <barejid>{aBarejid}</barejid>
+                </account>
               </musubi>);
 }
 
 function send() {
   var o = Form.serialize("account", true);
   Musubi.send(<musubi type="set">
-                <account id={o["userid"]}>
-                  <name>{o["username"]}</name>
-                  <domain>{o["domain"]}</domain>
-                  <resource>{o["resource"]}</resource>
+                <account>
                   <barejid>{o["username"] + "@" + o["domain"]}</barejid>
-                  <fulljid>{o["username"] + "@" + o["domain"] + "/" + o["resource"]}</fulljid>
+                  <resource>{o["resource"]}</resource>
                   <password>{o["password"]}</password>
-                   <connectionHost>{o["connection-host"]}</connectionHost>
-                   <connectionPort>{o["connection-port"]}</connectionPort>
+                  <connectionHost>{o["connection-host"]}</connectionHost>
+                  <connectionPort>{o["connection-port"]}</connectionPort>
                   <connectionScrty>{o["connection-scrty"]}</connectionScrty>
                   <comment></comment>
                 </account>
@@ -25,12 +24,9 @@ function send() {
 
 function recvTest0() {
   recv(<musubi type="result">
-         <account id="0">
-           <name>romeo</name>
-           <domain>localhost</domain>
-           <resource></resource>
+         <account>
            <barejid>romeo@localhost</barejid>
-           <fulljid>romeo@localhost/</fulljid>
+           <resource></resource>
            <connectionHost>localhost</connectionHost>
            <connectionPort>5223</connectionPort>
            <connectionScrty>0</connectionScrty>
@@ -41,6 +37,6 @@ function recvTest0() {
 
 function recvTest1() {
   recv(<musubi type="result">
-         <account id="0"/>
+         <account/>
        </musubi>);
 }

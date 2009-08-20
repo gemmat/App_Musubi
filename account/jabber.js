@@ -6,9 +6,9 @@ function recv(xml) {
     if (xml.@type == "result" && xml.account.length()) {
       if (xml.account.*.length()) {
         var a = xml.account;
-        $("userid")             .value = a.@id               .toString();
-        $("username")           .value = a.name              .toString();
-        $("domain")             .value = a.domain            .toString();
+        var p = Musubi.parseJID(a.barejid.toString());
+        $("username")           .value = p.name;
+        $("domain")             .value = p.host;
         $("resource")           .value = a.resource          .toString();
         $("connection-host")    .value = a.connectionHost    .toString();
         $("connection-port")    .value = a.connectionPort    .toString();
@@ -27,7 +27,7 @@ function recv(xml) {
 Event.observe(window, "load", function (evt) {
   Musubi.init();
   Musubi.onRecv = recv;
-  var m = /^\?id=(.+)/.exec(document.location.search);
+  var m = /^\?barejid=(.+)/.exec(document.location.search);
   if (m) {
     sendRequestUserInfo(m[1]);
   }

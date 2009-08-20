@@ -6,11 +6,11 @@ function recv(xml) {
     if (xml.@type == "result" && xml.account.length()) {
       if (xml.account.*.length()) {
         var a = xml.account;
-        $("userid")             .value = a.@id               .toString();
-        $("username")           .value = a.name              .toString();
-        if (a.domain.toString() == "gmail.com") {
+        var p = Musubi.parseJID(a.barejid.toString());
+        $("username")           .value = p.name;
+        if (p.host == "gmail.com") {
           $("domain-gmail").selected = true;
-        } else if (a.domain.toString() == "googlemail.com") {
+        } else if (p.host == "googlemail.com") {
           $("domain-googlemail").selected = true;
         }
         $("resource")           .value = a.resource          .toString();
@@ -31,7 +31,7 @@ function recv(xml) {
 Event.observe(window, "load", function windowOnLoad(evt) {
   Musubi.init();
   Musubi.onRecv = recv;
-  var m = /^\?id=(.+)/.exec(document.location.search);
+  var m = /^\?barejid=(.+)/.exec(document.location.search);
   if (m) {
     sendRequestUserInfo(m[1]);
   }

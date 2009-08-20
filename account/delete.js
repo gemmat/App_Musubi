@@ -9,8 +9,9 @@ function recv(xml) {
       var df = document.createDocumentFragment();
       for (var i = 0; i < xml.accounts.account.length(); i++) {
         var account = xml.accounts.account[i];
+        var p = Musubi.parseJID(account.barejid.toString());
         var service = {};
-        switch (account.domain.toString()) {
+        switch (p.host) {
         case "gmail":       //FALLTHROUGH
         case "googlemail":
           service = {
@@ -30,19 +31,19 @@ function recv(xml) {
         var elt = SPAN({className: "delete-button"},
                        UL({className: "service"},
                           LI(IMG({src: service.imgsrc, alt: service.imgalt})),
-                          LI(SPAN({className: "account-jid"},
-                             account.name.toString() + "@" + account.domain.toString()),
-                             SPAN("/" + account.resource.toString())),
+                          LI(SPAN(account.barejid + "/" + account.resource)),
                           LI(service.imgalt)));
-        Event.observe(elt, "click", (function(id) {
+        Event.observe(elt, "click", (function(barejid) {
           return function(e) {
             Musubi.send(<musubi type="set">
                           <deleteitem>
-                            <account id={id}/>
+                            <account>
+                              <barejid>{barejid}</barejid>
+                            </account>
                           </deleteitem>
                         </musubi>);
           };
-        })(account.@id.toString()));
+        })(account.barejid.toString()));
         df.appendChild(LI(elt));
       }
       eltAccounts.appendChild(df);
@@ -64,23 +65,17 @@ function sendRequestAccounts() {
 function recvTest0() {
   recv(<musubi type="result">
          <accounts>
-           <account id="3">
-             <name>romeo</name>
-             <domain>localhost</domain>
-             <resource>Musubi</resource>
+           <account>
              <barejid>romeo@localhost</barejid>
-             <fulljid>romeo@localhost/Musubi</fulljid>
+             <resource>Musubi</resource>
              <connectionHost>localhost</connectionHost>
              <connectionPort>5223</connectionPort>
              <connectionScrty>0</connectionScrty>
              <comment></comment>
            </account>
-           <account id="4">
-             <name>teruakigemma</name>
-             <domain>gmail</domain>
-             <resource></resource>
+           <account>
              <barejid>teruakigemma@gmail</barejid>
-             <fulljid>teruakigemma@gmail/</fulljid>
+             <resource></resource>
              <connectionHost>talk.google.com</connectionHost>
              <connectionPort>443</connectionPort>
              <connectionScrty>1</connectionScrty>

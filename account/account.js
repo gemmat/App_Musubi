@@ -8,7 +8,8 @@ function recv(xml) {
       for (var i = 0; i < xml.accounts.account.length(); i++) {
         var account = xml.accounts.account[i];
         var service = {};
-        switch (account.domain.toString()) {
+        var p = Musubi.parseJID(account.barejid.toString());
+        switch (p.host) {
         case "gmail":       //FALLTHROUGH
         case "googlemail":
           service = {
@@ -34,7 +35,7 @@ function recv(xml) {
           };
         })(account.barejid.toString()));
         df.appendChild(
-          LI(A({href: service.href + "?id=" + account.@id},
+          LI(A({href: service.href + "?barejid=" + account.barejid.toString()},
                UL({className: "service"},
                   LI(IMG({src: service.imgsrc, alt: service.imgalt})),
                   LI(SPAN({className: "account-jid"}, account.barejid.toString()),
@@ -66,23 +67,17 @@ function recv(xml) {
 function recvTest0() {
   recv(<musubi type="result">
          <accounts>
-           <account id="3">
-             <name>romeo</name>
-             <domain>localhost</domain>
-             <resource>Musubi</resource>
+           <account>
              <barejid>romeo@localhost</barejid>
-             <fulljid>romeo@localhost/Musubi</fulljid>
+             <resource>Musubi</resource>
              <connectionHost>localhost</connectionHost>
              <connectionPort>5223</connectionPort>
              <connectionScrty>0</connectionScrty>
              <comment></comment>
            </account>
-           <account id="4">
-             <name>teruakigemma</name>
-             <domain>gmail</domain>
-             <resource></resource>
+           <account>
              <barejid>teruakigemma@gmail</barejid>
-             <fulljid>teruakigemma@gmail/</fulljid>
+             <resource></resource>
              <connectionHost>talk.google.com</connectionHost>
              <connectionPort>443</connectionPort>
              <connectionScrty>1</connectionScrty>
