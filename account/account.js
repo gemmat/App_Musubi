@@ -26,11 +26,11 @@ function recv(xml) {
                     };
           break;
         }
-        var imgDefaultJID = IMG({src: "homeGray.png", className: "account-set-defaultjid"});
-        Event.observe(imgDefaultJID, "click", (function(jid) {
+        var imgDefaultAccount = IMG({src: "homeGray.png", className: "account-set-defaultAccount"});
+        Event.observe(imgDefaultAccount, "click", (function(barejid) {
           return function(e) {
             Musubi.send(<musubi type="set">
-                          <defaultjid>{jid}</defaultjid>
+                          <defaultaccount>{barejid}</defaultaccount>
                         </musubi>);
           };
         })(account.barejid.toString()));
@@ -38,24 +38,23 @@ function recv(xml) {
           LI(A({href: service.href + "?barejid=" + account.barejid.toString()},
                UL({className: "service"},
                   LI(IMG({src: service.imgsrc, alt: service.imgalt})),
-                  LI(SPAN({className: "account-jid"}, account.barejid.toString()),
-                     SPAN("/" + account.resource.toString())),
+                  LI(SPAN({className: "account-jid"}, account.barejid.toString())),
                   LI(service.imgalt))),
-             imgDefaultJID));
+             imgDefaultAccount));
 
       }
        $("accounts").appendChild(df);
     }
-    if (xml.@type == "result" && xml.defaultjid.length()) {
+    if (xml.@type == "result" && xml.defaultaccount.length()) {
       $$("span.account-jid").forEach(function(x) {
         var li = x.up(3);
-        var img = li.down(8);
-        if (li.hasClassName("default-jid")) {
-          li.removeClassName("default-jid");
+        var img = li.down(7);
+        if (li.hasClassName("default-account")) {
+          li.removeClassName("default-account");
           img.src = "homeGray.png";
         }
-        if (x.textContent == xml.defaultjid.toString()) {
-          li.addClassName("default-jid");
+        if (x.textContent == xml.defaultaccount.toString()) {
+          li.addClassName("default-account");
           img.src = "home.png";
         }
       });
@@ -89,7 +88,7 @@ function recvTest0() {
 
 function recvTest1() {
   recv(<musubi type="result">
-         <defaultjid>romeo@localhost</defaultjid>
+         <defaultaccount>romeo@localhost</defaultaccount>
        </musubi>);
 }
 
@@ -101,6 +100,6 @@ Event.observe(window, "load", function (evt) {
                 <accounts/>
               </musubi>);
   Musubi.send(<musubi type="get">
-                <defaultjid/>
+                <defaultaccount/>
               </musubi>);
 });
