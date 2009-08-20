@@ -35,59 +35,24 @@ function recv(xml) {
                           LI(service.imgalt)));
         Event.observe(elt, "click", (function(barejid) {
           return function(e) {
-            Musubi.send(<musubi type="set">
-                          <deleteitem>
-                            <account>
-                              <barejid>{barejid}</barejid>
-                            </account>
-                          </deleteitem>
-                        </musubi>);
+            sendDeleteAccount(barejid);
           };
         })(account.barejid.toString()));
         df.appendChild(LI(elt));
       }
       eltAccounts.appendChild(df);
-    } else if (xml.@type == "result" && xml.deleteitem.length()) {
-      if (xml.deleteitem.account.length()) {
-        sendRequestAccounts();
+    } else if (xml.@type == "result" && xml.account.length()) {
+      if (xml.account.@del.length()) {
+        sendReadAllAccount();
       }
     }
     break;
   }
 }
 
-function sendRequestAccounts() {
-  Musubi.send(<musubi type="get">
-                <accounts/>
-              </musubi>);
-}
-
-function recvTest0() {
-  recv(<musubi type="result">
-         <accounts>
-           <account>
-             <barejid>romeo@localhost</barejid>
-             <resource>Musubi</resource>
-             <connectionHost>localhost</connectionHost>
-             <connectionPort>5223</connectionPort>
-             <connectionScrty>0</connectionScrty>
-             <comment></comment>
-           </account>
-           <account>
-             <barejid>teruakigemma@gmail</barejid>
-             <resource></resource>
-             <connectionHost>talk.google.com</connectionHost>
-             <connectionPort>443</connectionPort>
-             <connectionScrty>1</connectionScrty>
-             <comment></comment>
-           </account>
-         </accounts>
-       </musubi>);
-}
-
 Event.observe(window, "load", function (evt) {
   Builder.dump(window);
   Musubi.init();
   Musubi.onRecv = recv;
-  sendRequestAccounts();
+  sendReadAllAccount();
 });

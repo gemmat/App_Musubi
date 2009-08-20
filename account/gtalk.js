@@ -31,8 +31,10 @@ function recv(xml) {
 Event.observe(window, "load", function windowOnLoad(evt) {
   Musubi.init();
   Musubi.onRecv = recv;
+  Event.observe("account", "submit", function(e) {
+    sendCreateUpdateAccount();
+    Event.stop(e);
+  });
   var m = /^\?barejid=(.+)/.exec(document.location.search);
-  if (m) {
-    sendRequestUserInfo(m[1]);
-  }
+  if (m) sendReadAccount(m[1]);
 });

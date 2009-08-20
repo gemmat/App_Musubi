@@ -29,9 +29,7 @@ function recv(xml) {
         var imgDefaultAccount = IMG({src: "homeGray.png", className: "account-set-defaultAccount"});
         Event.observe(imgDefaultAccount, "click", (function(barejid) {
           return function(e) {
-            Musubi.send(<musubi type="set">
-                          <defaultaccount>{barejid}</defaultaccount>
-                        </musubi>);
+            sendSetDefaultAccount(barejid);
           };
         })(account.barejid.toString()));
         df.appendChild(
@@ -43,7 +41,7 @@ function recv(xml) {
              imgDefaultAccount));
 
       }
-       $("accounts").appendChild(df);
+      $("accounts").appendChild(df);
     }
     if (xml.@type == "result" && xml.defaultaccount.length()) {
       $$("span.account-jid").forEach(function(x) {
@@ -63,43 +61,10 @@ function recv(xml) {
   }
 }
 
-function recvTest0() {
-  recv(<musubi type="result">
-         <accounts>
-           <account>
-             <barejid>romeo@localhost</barejid>
-             <resource>Musubi</resource>
-             <connectionHost>localhost</connectionHost>
-             <connectionPort>5223</connectionPort>
-             <connectionScrty>0</connectionScrty>
-             <comment></comment>
-           </account>
-           <account>
-             <barejid>teruakigemma@gmail</barejid>
-             <resource></resource>
-             <connectionHost>talk.google.com</connectionHost>
-             <connectionPort>443</connectionPort>
-             <connectionScrty>1</connectionScrty>
-             <comment></comment>
-           </account>
-         </accounts>
-       </musubi>);
-}
-
-function recvTest1() {
-  recv(<musubi type="result">
-         <defaultaccount>romeo@localhost</defaultaccount>
-       </musubi>);
-}
-
 Event.observe(window, "load", function (evt) {
   Builder.dump(window);
   Musubi.init();
   Musubi.onRecv = recv;
-  Musubi.send(<musubi type="get">
-                <accounts/>
-              </musubi>);
-  Musubi.send(<musubi type="get">
-                <defaultaccount/>
-              </musubi>);
+  sendReadAllAccount();
+  sendGetDefaultAccount();
 });
