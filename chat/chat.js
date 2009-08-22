@@ -7,7 +7,7 @@ function send() {
 }
 
 function recv(xml) {
-  document.body.innerHTML += xml.@from + ":" + xml.body + "<br/>";
+  document.body.innerHTML += (xml.@from.length() ? xml.@from : "me") + ":" + xml.body + "<br/>";
 }
 
 window.onload = function () {

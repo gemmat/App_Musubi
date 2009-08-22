@@ -1,9 +1,7 @@
-function appendAccount(aBarejid, aResource) {
-  var to = aBarejid + "/" + aResource;
-  var elt = A({href: "xmpp://" + aBarejid + "/" + to + "?share;href=sidebar2.html"}, to);
+function appendAccount(aFulljid) {
+  var elt = SPAN({className: "account"}, aFulljid);
   Event.observe(elt, "click", function(e) {
-    sendMusubiConnect(e.target.textContent);
-    //TODO Event.stop(e) and wait the connection is to be online.
+    sendMusubiConnect(aFulljid);
   });
   $("accounts").appendChild(LI(elt));
 }
@@ -13,16 +11,24 @@ function recv(xml) {
   case "musubi":
     if (xml.@type == "result" && xml.accounts.length()) {
       for (var i = 0, len = xml.accounts.account.length(); i < len; i++) {
-        appendAccount(xml.accounts.account[i].barejid.toString(),
-                      xml.accounts.account[i].resource.toString());
+        appendAccount(xml.accounts.account[i].barejid +
+                      "/" +
+                      xml.accounts.account[i].resource);
       }
+    }
+    if (xml.@type == "result" && xml.connect.length()) {
+      var p = Musubi.parseJID(xml.connect.toString());
+      if (!p) break;
+      document.location.href = "xmpp://" + p.barejid + "/" + p.fulljid + "?share;href=sidebar2.html";
     }
     break;
   }
 }
 
 function sendMusubiConnect(aAccount) {
-  Musubi.send(<musubi type="set"><connect>{aAccount}</connect></musubi>);
+  Musubi.send(<musubi type="set">
+                <connect>{aAccount}</connect>
+              </musubi>);
 }
 
 function sendMusubiReadAllAccount() {
