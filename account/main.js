@@ -16,13 +16,13 @@ function makeServiceInfo(aDomain) {
   }
 }
 
-function sendReadAllAccount() {
+function sendMusubiReadAllAccount() {
   Musubi.send(<musubi type="get">
                 <accounts/>
               </musubi>);
 }
 
-function sendReadAccount(aBarejid) {
+function sendMusubiReadAccount(aBarejid) {
   Musubi.send(<musubi type="get">
                 <account>
                   <barejid>{aBarejid}</barejid>
@@ -30,7 +30,7 @@ function sendReadAccount(aBarejid) {
               </musubi>);
 }
 
-function sendCreateUpdateAccount() {
+function sendMusubiCreateUpdateAccount() {
   var o = Form.serialize("account", true);
   Musubi.send(<musubi type="set">
                 <account>
@@ -46,7 +46,7 @@ function sendCreateUpdateAccount() {
   return false;
 }
 
-function sendDeleteAccount(aBarejid) {
+function sendMusubiDeleteAccount(aBarejid) {
   Musubi.send(<musubi type="set">
                 <account del="del">
                   <barejid>{aBarejid}</barejid>
@@ -54,13 +54,13 @@ function sendDeleteAccount(aBarejid) {
               </musubi>);
 }
 
-function sendGetDefaultAccount() {
+function sendMusubiGetDefaultAccount() {
   Musubi.send(<musubi type="get">
                 <defaultaccount/>
               </musubi>);
 }
 
-function sendSetDefaultAccount(aBarejid) {
+function sendMusubiSetDefaultAccount(aBarejid) {
   Musubi.send(<musubi type="set">
                 <defaultaccount>{aBarejid}</defaultaccount>
               </musubi>);

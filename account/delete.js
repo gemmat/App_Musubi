@@ -18,7 +18,7 @@ function recv(xml) {
                           LI(service.imgalt)));
         Event.observe(elt, "click", (function(barejid) {
           return function(e) {
-            sendDeleteAccount(barejid);
+            sendMusubiDeleteAccount(barejid);
           };
         })(account.barejid.toString()));
         df.appendChild(LI(elt));
@@ -26,7 +26,7 @@ function recv(xml) {
       eltAccounts.appendChild(df);
     } else if (xml.@type == "result" && xml.account.length()) {
       if (xml.account.@del.length()) {
-        sendReadAllAccount();
+        sendMusubiReadAllAccount();
       }
     }
     break;
@@ -37,5 +37,5 @@ Event.observe(window, "load", function (evt) {
   Builder.dump(window);
   Musubi.init();
   Musubi.onRecv = recv;
-  sendReadAllAccount();
+  sendMusubiReadAllAccount();
 });

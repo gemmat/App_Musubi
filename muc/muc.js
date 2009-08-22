@@ -21,8 +21,7 @@ function leaveRoom() {
 }
 
 function appendMessage(aFrom, aBody) {
-  var o = Musubi.parseJID(aFrom);
-  if (o) aFrom = o.resource;
+  if (Musubi.info) aFrom = Musubi.info.resource;
   var history = $("history");
   history.appendChild(new Element("dt").update(aFrom));
   history.appendChild(new Element("dd").update(aBody));
@@ -53,8 +52,8 @@ function recv(xml) {
       break;
     }
     var participants = $("participants");
-    var o = Musubi.parseJID(xml.@from.toString());
-    var nick = o ? o.resource : xml.@from.toString();
+    var p = Musubi.parseJID(xml.@from.toString());
+    var nick = p ? p.resource : xml.@from.toString();
     var arr = [];
     participants.childElements().forEach(function(x) {
       if (x.textContent == nick) arr.push(x);

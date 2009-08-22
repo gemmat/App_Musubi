@@ -19,42 +19,34 @@ function appendPresence(aFrom, aTo, aPresenceType) {
     syncContactsWithSendtoOptions();
     break;
   case "subscribe":
-    var buttonSubscribed   = BUTTON("OK");
-    var buttonUnsubscribed = BUTTON("NO");
-    var elt0 = LI(SPAN({className: "contact-item-subscribe"},
-                       aFrom + "が友達になりたいそうです",
-                       buttonSubscribed,
-                       buttonUnsubscribed));
-    Event.observe(buttonSubscribed, "click", function(e) {
-      Musubi.send(<presence to={aFrom} type="subscribed"/>);
-      Element.remove(elt0);
-      });
-    Event.observe(buttonUnsubscribed, "click", function(e) {
-      Musubi.send(<presence to={aFrom} type="unsubscribe"/>);
-      Element.remove(elt0);
-      });
+    var elt0 = LI(SPAN(aFrom + "からフレンドリクエストです。オプションへどうぞ"));
+    setTimeout(function(e) {Element.remove(elt0);}, 5000);
     $("contacts-message").appendChild(elt0);
     break;
   case "subscribed":
-    var elt1 = LI(SPAN({className: "contact-item-subscribed"},
-                       aFrom + "はOKだそうです。"));
+    var elt1 = LI(SPAN(aFrom + "がフレンドリクエストにOKしました"));
     setTimeout(function(e) {Element.remove(elt1);}, 5000);
     $("contacts-message").appendChild(elt1);
     break;
   case "unsubscribed":
-    var elt2 = LI(SPAN({className: "contact-item-unsubscribed"},
-                       aFrom + "はNOだそうです。"));
+    var elt2 = LI(SPAN(aFrom + "がフレンドリクエストをキャンセルしました"));
     setTimeout(function(e) {Element.remove(elt2);}, 5000);
     $("contacts-message").appendChild(elt2);
     break;
   default:
-    var o = Musubi.parseURI(document.location.href);
+    if (!Musubi.info) break;
     var p = Musubi.parseJID(aFrom);
-    if (!o || !p) break;
-    if (o.account == p.barejid) break;
+    if (!p) break;
+    if (Musubi.info.account == p.barejid) break;
     if (findContacts(p.fulljid).length) break;
     var elt3 = LI(SPAN({className: "contact-item"}, aFrom));
-    Event.observe(elt3, "click", openContact(aFrom, aTo));
+    Event.observe(elt3, "click", (function (aTo) {
+      return function(e) {
+        if (Musubi.info) {
+          sendMusubiOpenContact(Musubi.info.account, aTo);
+        }
+      };
+    })(aFrom));
     $("contacts").appendChild(elt3);
     syncContactsWithSendtoOptions();
     break;
@@ -96,7 +88,13 @@ function appendRoster(aFrom, aItems) {
     var itemjid = aItems[i].@jid.toString();
     if (findContacts(itemjid).length) continue;
     var elt = LI(SPAN({className: "contact-item"}, itemjid));
-    Event.observe(elt, "click", openContact(itemjid, aFrom));
+    Event.observe(elt, "click", (function (aTo) {
+      return function(e) {
+        if (Musubi.info) {
+          sendMusubiOpenContact(Musubi.info.account, aTo);
+        }
+      };
+    })(itemjid));
     df.appendChild(elt);
   }
   $("contacts").appendChild(df);
@@ -105,7 +103,7 @@ function appendRoster(aFrom, aItems) {
 
 function send() {
   var value = $F("msg");
-  Musubi.send(<message type="chat">
+  Musubi.send(<message to={$("sendto").value} type="chat">
                 <body>{value}</body>
               </message>);
   appendMessage("me", value);
@@ -133,10 +131,15 @@ function recv(xml) {
     }
     break;
   case "iq":
-    if (xml.@type == "result") {
+    if (xml.@type == "result" || xml.@type == "set") {
       var nsIQRoster = new Namespace("jabber:iq:roster");
       if (xml.nsIQRoster::query.length() && xml.nsIQRoster::query.nsIQRoster::item.length()) {
         appendRoster(xml.@from.toString(), xml.nsIQRoster::query.nsIQRoster::item);
+      }
+      if (xml.@type == "set") {
+        if (Musubi.info) {
+          sendIQResultRoster(Musubi.info.account, xml.@from.toString, xml.@id.toString());
+        }
       }
     }
   }
@@ -144,15 +147,29 @@ function recv(xml) {
   historyContainer.scrollTop = historyContainer.scrollHeight;
 }
 
-function openContact(aFrom, aTo) {
-  return function(e) {
-    Musubi.send(<musubi type="get">
-                  <opencontanct>
-                    <account>{aTo}</account>
-                    <contact>{aFrom}</contact>
-                  </opencontanct>
-                </musubi>);
-  };
+function sendMusubiOpenContact(aFrom, aTo) {
+  Musubi.send(<musubi type="get">
+                <opencontanct>
+                  <account>{aFrom}</account>
+                  <contact>{aTo}</contact>
+                </opencontanct>
+              </musubi>);
+}
+
+function sendMusubiGetCachedPresence(aFrom) {
+  Musubi.send(<musubi type="get">
+                <cachedpresences from={aFrom}/>
+              </musubi>);
+}
+
+function sendIQGetRoster(aFulljid, aBarejid) {
+  Musubi.send(<iq from={aFulljid} to={aBarejid} type="get">
+                <query xmlns="jabber:iq:roster"/>
+              </iq>);
+}
+
+function sendIQResultRoster(aAccount, aTo, aId) {
+  Musubi.send(<iq from={aAccount} to={aTo} id={aId} type="result"/>);
 }
 
 function recvTest0() {
@@ -226,16 +243,11 @@ Event.observe(window, "load", function (e) {
   Builder.dump(window);
   Musubi.init();
   Musubi.onRecv = recv;
-  var o = Musubi.parseURI(document.location.href);
-  if (o) {
-    Musubi.send(<musubi type="get">
-                  <cachedpresences from={o.account}/>
-                </musubi>);
-    Musubi.send(<iq from={o.to} to={o.account} type="get">
-                  <query xmlns="jabber:iq:roster"/>
-                </iq>);
+  if (Musubi.info) {
+    sendMusubiGetCachedPresence(Musubi.info.to);
+    sendIQGetRoster(Musubi.info.to, Musubi.info.account);
     $("account-container").appendChild(P(A({href: document.location.href},
-                                           o.account)));
+                                           Musubi.info.account)));
   }
   Event.observe("chat", "submit", function(e) {
     send();

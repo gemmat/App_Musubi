@@ -12,7 +12,7 @@ function recv(xml) {
         var imgDefaultAccount = IMG({src: "homeGray.png", className: "account-set-defaultAccount"});
         Event.observe(imgDefaultAccount, "click", (function(barejid) {
           return function(e) {
-            sendSetDefaultAccount(barejid);
+            sendMusubiSetDefaultAccount(barejid);
           };
         })(account.barejid.toString()));
         df.appendChild(
@@ -48,6 +48,6 @@ Event.observe(window, "load", function (evt) {
   Builder.dump(window);
   Musubi.init();
   Musubi.onRecv = recv;
-  sendReadAllAccount();
-  sendGetDefaultAccount();
+  sendMusubiReadAllAccount();
+  sendMusubiGetDefaultAccount();
 });

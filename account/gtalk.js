@@ -32,9 +32,9 @@ Event.observe(window, "load", function windowOnLoad(evt) {
   Musubi.init();
   Musubi.onRecv = recv;
   Event.observe("account", "submit", function(e) {
-    sendCreateUpdateAccount();
+    sendMusubiCreateUpdateAccount();
     Event.stop(e);
   });
   var m = /^\?barejid=(.+)/.exec(document.location.search);
-  if (m) sendReadAccount(m[1]);
+  if (m) sendMusubiReadAccount(m[1]);
 });

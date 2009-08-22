@@ -1,6 +1,7 @@
 var Musubi = {
   eltIn:  null,
   eltOut: null,
+  info: null,
   init: function MusubiInit() {
     if ("createEvent" in document) {
       this.eltIn  = document.createElement("xmppin");
@@ -12,6 +13,7 @@ var Musubi = {
       this.eltIn .addEventListener("DOMNodeInserted", this.listnerIn,  false);
       this.eltOut.addEventListener("DOMNodeInserted", this.listnerOut, false);
     }
+    this.info = this.parseURI(document.location.href);
   },
   listnerIn:  function MusubiListenerIn(aEvt) {
     Musubi.onRecv(Musubi.DOMToE4X(aEvt.target));

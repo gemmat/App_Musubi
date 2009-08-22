@@ -2,7 +2,7 @@ function appendAccount(aBarejid, aResource) {
   var to = aBarejid + "/" + aResource;
   var elt = A({href: "xmpp://" + aBarejid + "/" + to + "?share;href=sidebar2.html"}, to);
   Event.observe(elt, "click", function(e) {
-    connect(e.target.textContent);
+    sendMusubiConnect(e.target.textContent);
     //TODO Event.stop(e) and wait the connection is to be online.
   });
   $("accounts").appendChild(LI(elt));
@@ -21,8 +21,14 @@ function recv(xml) {
   }
 }
 
-function connect(aAccount) {
+function sendMusubiConnect(aAccount) {
   Musubi.send(<musubi type="set"><connect>{aAccount}</connect></musubi>);
+}
+
+function sendMusubiReadAllAccount() {
+  Musubi.send(<musubi type="get">
+                <accounts/>
+              </musubi>);
 }
 
 function recvTest0() {
@@ -59,7 +65,5 @@ Event.observe(window, "load", function (e) {
   Builder.dump(window);
   Musubi.init();
   Musubi.onRecv = recv;
-  Musubi.send(<musubi type="get">
-                <accounts/>
-              </musubi>);
+  sendMusubiReadAllAccount();
 });
