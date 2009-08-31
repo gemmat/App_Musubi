@@ -55,9 +55,11 @@ function main() {
   Musubi.onRecv = recv;
   Event.observe($("form-create-room"), "submit", function(e) {
     var room = $("room").value;
-    var o = Musubi.parseURI(document.location.href);
-    if (room && o) {
-      document.location.href = "xmpp:" + room + "@" + o.domain + "?share;href=muc.html?create";
+    if (room && Musubi.info) {
+      var o = Musubi.parseJID(Musubi.info.sendto);
+      if (o) {
+        document.location.href = "xmpp:" + room.toLowerCase() + "@" + o.domain + "?share;href=muc.html?create";
+      }
     }
     Event.stop(e);
   });

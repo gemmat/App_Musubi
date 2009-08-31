@@ -20,24 +20,22 @@ function leaveRoom() {
   }
 }
 
-function appendMessage(aFrom, aBody) {
-  var history = $("history");
-  history.appendChild(new Element("dt").update(aFrom));
-  history.appendChild(new Element("dd").update(aBody));
-}
-
-function send() {
-  var xml = <message type="groupchat">
-	            <body>{$("msg").value}</body>
-            </message>;
-  Musubi.send(xml);
-  $("msg").value = "";
-}
-
-function recv(xml) {
+function recvMUC(xml) {
   switch (xml.name().localName) {
   case "message":
-    appendMessage(xml.@from.toString(), xml.body.toString());
+    var nsXhtmlIm = new Namespace("http://jabber.org/protocol/xhtml-im");
+    var nsXhtml = new Namespace("http://www.w3.org/1999/xhtml");
+    var imgsrc   = xml.nsXhtmlIm::html..nsXhtml::img.@src;
+    var imgstyle = xml.nsXhtmlIm::html..nsXhtml::img.@style;
+    if (imgsrc.length()) {
+      var img = null;
+      if (imgstyle.length()) {
+        img = new Element("img", {className: "canvas-img-stamp", src: imgsrc, style: imgstyle});
+      } else {
+        img = new Element("img", {className: "canvas-img", src: imgsrc, width: cnvWidth, height: cnvHeight});
+      }
+      $("canvas-history").appendChild(img);
+    }
     break;
   case "presence":
     var nav = $("navigation");
@@ -67,13 +65,9 @@ function recv(xml) {
   }
 }
 
-function main() {
-  Musubi.init();
-  Musubi.onRecv = recv;
-  Event.observe("form-msg", "submit", function(e) {
-    send();
-    Event.stop(e);
-  });
+function mainMUC() {
+  chattype = "groupchat";
+  Musubi.onRecv = recvMUC;
   Event.observe("form-nickname", "submit", function(e) {
     joinRoom();
     Event.stop(e);
@@ -83,5 +77,4 @@ function main() {
   });
 }
 
-Event.observe(window, "load",   main);
-Event.observe(window, "unload", leaveRoom);
+Event.observe(window, "load", mainMUC);

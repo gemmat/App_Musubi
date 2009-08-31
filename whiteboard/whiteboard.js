@@ -4,6 +4,7 @@ var cnvWidth   = 640;
 var cnvHeight  = 480;
 var cnvWidthS  = 320;
 var cnvHeightS = 240;
+var chattype = "chat";
 
 function getPos(e) {
   var elt = e.element();
@@ -199,7 +200,7 @@ function sendCanvas(e) {
   var sc = small.getContext("2d");
   sc.drawImage(canvas, 0, 0, cnvWidthS, cnvHeightS);
   var dataurl = small.toDataURL();
-  var xml = <message type="chat">
+  var xml = <message type={chattype}>
               <body>{dataurl}</body>
               <html xmlns="http://jabber.org/protocol/xhtml-im">
                 <body xmlns="http://www.w3.org/1999/xhtml">
@@ -213,7 +214,7 @@ function sendCanvas(e) {
 }
 
 function sendStamp(aImgSrc, aX, aY) {
-  var xml = <message type="chat">
+  var xml = <message type={chattype}>
               <body>{aImgSrc + "at(" + aX + "," + aY + ")"}</body>
               <html xmlns="http://jabber.org/protocol/xhtml-im">
                 <body xmlns="http://www.w3.org/1999/xhtml">
@@ -305,7 +306,6 @@ function main() {
   $("clear") .observe("click", clear);
   $("newcnv").observe("click", newcnv);
   $("stamp-maker").observe("submit", stampMaker);
-  $("xxx0").observe("click", onClickStampImage);
 }
 
 Event.observe(window, "load", main);
