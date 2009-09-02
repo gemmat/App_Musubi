@@ -31,6 +31,9 @@ Event.observe(window, "load", function (evt) {
     sendMusubiCreateUpdateAccount();
     Event.stop(e);
   });
+  Event.observe("domain", "change", function(e) {
+    $("connection-host").value = $("domain").value;
+  });
   var m = /^\?barejid=(.+)/.exec(document.location.search);
   if (m) sendMusubiReadAccount(m[1]);
 });
