@@ -1,5 +1,7 @@
-var canvas = "canvas element";
-var c = "canvas context";
+var cnv;      //canvas element
+var ctx;      //canvas context
+var smallcnv; //small canvas element
+var smallctx; //small canvas context
 var cnvWidth   = 640;
 var cnvHeight  = 480;
 var cnvWidthS  = 320;
@@ -60,7 +62,7 @@ var Brushes = Class.create({
     } else { //draw connecting line
 	    this.draw(e);
     }
-    c.moveTo(m.x, m.y);
+    ctx.moveTo(m.x, m.y);
   },
   down: function(e) {
     this.last   = null;
@@ -69,16 +71,17 @@ var Brushes = Class.create({
     this.sstart = this.last = getXY(e);
     this.status = 1;
     this.discon = false;
-    c.beginPath();
+    ctx.beginPath();
   },
   up: function(e) {
     var m = getXY(e);
     if(this.sstart && this.sstart.x == m.x && this.sstart.y == m.y) {
-	    drawDot(m.x, m.y, c.lineWidth, c.strokeStyle);
+	    drawDot(m.x, m.y, ctx.lineWidth, ctx.strokeStyle);
     }
     this.sstart = null;
     this.status = 0;
-    c.closePath();
+    ctx.closePath();
+    sendCanvas();
   },
   out: function(e) {
     if (this.status == 1) {
@@ -101,10 +104,10 @@ var Brushes = Class.create({
 		             y: l.y + delta2.y * 1.4};
     }
     this.lastcp = {x: this.cp.x, y: this.cp.y};
-    c.bezierCurveTo(this.cp.x, this.cp.y, m.x, m.y, m.x, m.y);  //make pretty curve, first two params =control pt
-    c.closePath();
-    c.stroke();
-    c.beginPath();
+    ctx.bezierCurveTo(this.cp.x, this.cp.y, m.x, m.y, m.x, m.y);  //make pretty curve, first two params =control pt
+    ctx.closePath();
+    ctx.stroke();
+    ctx.beginPath();
     this.last = {x: m.x, y: m.y};
   }
 });
@@ -196,10 +199,8 @@ function recv(xml) {
 }
 
 function sendCanvas(e) {
-  var small = $("small");
-  var sc = small.getContext("2d");
-  sc.drawImage(canvas, 0, 0, cnvWidthS, cnvHeightS);
-  var dataurl = small.toDataURL();
+  smallctx.drawImage(cnv, 0, 0, cnvWidthS, cnvHeightS);
+  var dataurl = smallcnv.toDataURL();
   var xml = <message type={chattype}>
               <body>{dataurl}</body>
               <html xmlns="http://jabber.org/protocol/xhtml-im">
@@ -208,9 +209,9 @@ function sendCanvas(e) {
                 </body>
               </html>
             </message>;
+  clear(e);
   Musubi.send(xml);
   recv(xml);
-  clear(e);
 }
 
 function sendStamp(aImgSrc, aX, aY) {
@@ -227,85 +228,118 @@ function sendStamp(aImgSrc, aX, aY) {
 }
 
 function clear(e) {
-  var sc = $("small").getContext("2d");
-  sc.clearRect(0, 0, cnvWidthS, cnvHeightS);
-  c.clearRect(0, 0, cnvWidth, cnvHeight);
+  smallctx.clearRect(0, 0, cnvWidthS, cnvHeightS);
+  ctx.clearRect(0, 0, cnvWidth, cnvHeight);
 }
 
-function newcnv(e) {
-  c.fillRect(0, 0, cnvWidth, cnvHeight);
-  sendCanvas(e);
+function makeStampImgSrc(aValue) {
+  //if aValue is the URL.
+  if (/^http:\/\//.test(aValue)) return aValue;
+  //if aValue is the Text.
+  var ct  = $("canvas-stamp-maker");
+  var ctc = ct.getContext("2d");
+  ctc.clearRect(0, 0, 240, 30);
+  ctc.save();
+  ctc.translate(0, 20);
+  ctc.mozTextStyle = "20pt sans serif";
+  ctc.fillStyle = "#000000";
+  ctc.mozDrawText(aValue);
+  ctc.restore();
+  return ct.toDataURL();
 }
 
-function stampMaker(e) {
-  var stampText = $("stamp-maker-src").value;
-  var stampImgSrc = "";
-  if (/^http:\/\//.test(stampText)) {
-    stampImgSrc = stampText;
-  } else {
-    var ct  = $("canvas-stamp-maker");
-    var ctc = ct.getContext("2d");
-    ctc.clearRect(0, 0, 240, 30);
-    ctc.save();
-    ctc.translate(0, 20);
-    ctc.mozTextStyle = "20pt sans serif";
-    ctc.fillStyle = "#000000";
-    ctc.mozDrawText(stampText);
-    ctc.restore();
-    stampImgSrc = ct.toDataURL();
+function appendStampImgS(aArray) {
+  var df = document.createDocumentFragment();
+  for (var i = 0, len = aArray.length; i < len; i++) {
+    appendStampImg(aArray[i], df);
   }
-  var img = new Element("img", {className: "stamp-img", src: stampImgSrc});
-  img.observe("click", onClickStampImage);
+  $("stamp-history").appendChild(df);
+}
+
+function appendStampImg(aValue, aElement) {
+  var img = new Element("img", {src: makeStampImgSrc(aValue),
+                                className: "stamp-img"});
+  img.observe("click", onClickStampImg);
   var li = new Element("li");
   li.appendChild(img);
-  var elt = $("stamp-history");
-  if (elt.firstChild) {
-    elt.insertBefore(li, elt.firstChild);
+  if (aElement.firstChild) {
+    aElement.insertBefore(li, aElement.firstChild);
   } else {
-    elt.appendChild(li);
+    aElement.appendChild(li);
   }
-  $("stamp-maker-src").value = "";
+}
+
+function onSubmitStampMaker(e) {
+  var elt = $("stamp-maker-src");
+  appendStampImg(elt.value, $("stamp-history"));
   Event.stop(e);
 }
 
-function onClickStampImage(e) {
+function onClickStampImg(e) {
   stamp.imgsrc = e.target.src;
   cursor.img.src = e.target.src;
   Tool = stamp;
 }
 
+function onClickBrush(e) {
+  ctx.lineWidth   = 1;
+  ctx.strokeStyle = "#000000";
+  Tool = brush;
+  cursor.img.src = $("brush").src;
+}
+
+function onClickEraser(e) {
+  ctx.lineWidth   = 12;
+  ctx.strokeStyle = "#FFFFFF";
+  Tool = brush;
+  cursor.img.src = $("eraser").src;
+}
+
+function onClickNewCanvas(e) {
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillRect(0, 0, cnvWidth, cnvHeight);
+  sendCanvas(e);
+}
+
 function main() {
   Musubi.init();
   Musubi.onRecv = recv;
-  canvas = $("canvas");
-  c = canvas.getContext("2d");
-  c.lineWidth   = 1;
-  c.strokeStyle = "#000000";
-  c.fillStyle   = "#FFFFFF";
-  brush = new Brushes();
-  stamp = new Stamp();
-  Tool = brush;
+  cnv = $("canvas");
+  ctx= cnv.getContext("2d");
+  smallcnv = $("small");
+  smallctx = smallcnv.getContext("2d");
+  brush  = new Brushes();
+  stamp  = new Stamp();
   cursor = new Cursor($("cursor-image"));
-  canvas.observe("mousemove", cMove);
-  canvas.observe("mousedown", cDown);
-  canvas.observe("mouseup",   cUp);
-  canvas.observe("mouseout",  cOut);
-  $("brush").observe("click", function(e) {
-    c.lineWidth   = 1;
-    c.strokeStyle = "#000000";
-    Tool = brush;
-    cursor.img.src = $("brush").src;
-  });
-  $("eraser").observe("click", function(e) {
-    c.lineWidth   = 12;
-    c.strokeStyle = "#FFFFFF";
-    Tool = brush;
-    cursor.img.src = $("eraser").src;
-  });
-  $("send")  .observe("click", sendCanvas);
-  $("clear") .observe("click", clear);
-  $("newcnv").observe("click", newcnv);
-  $("stamp-maker").observe("submit", stampMaker);
+  Tool = brush;
+  cnv.observe("mousemove", cMove);
+  cnv.observe("mousedown", cDown);
+  cnv.observe("mouseup",   cUp);
+  cnv.observe("mouseout",  cOut);
+  $("brush") .observe("click", onClickBrush);
+  $("eraser").observe("click", onClickEraser);
+  $("newcnv").observe("click", onClickNewCanvas);
+  $("stamp-maker").observe("submit", onSubmitStampMaker);
+  // absolute the URI of imgs' src.
+  var base = document.location.href.replace(/\/[^\/]*$/,"");
+  appendStampImgS([base + "/imgs/char_9728.png",
+                   base + "/imgs/char_9729.png",
+                   base + "/imgs/char_9730.png",
+                   base + "/imgs/char_9731.png",
+                   base + "/imgs/char_9733.png",
+                   base + "/imgs/char_9734.png",
+                   base + "/imgs/char_9749.png",
+                   base + "/imgs/char_9752.png",
+                   base + "/imgs/char_9760.png",
+                   base + "/imgs/char_9762.png",
+                   base + "/imgs/char_9785.png",
+                   base + "/imgs/char_9786.png",
+                   base + "/imgs/char_9792.png",
+                   base + "/imgs/char_9794.png",
+                   base + "/imgs/char_9816.png",
+                   base + "/imgs/char_9833.png",
+                   base + "/imgs/char_9834.png",
+                   base + "/imgs/char_9835.png"]);
 }
 
 Event.observe(window, "load", main);

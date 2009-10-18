@@ -2,9 +2,28 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <script type="text/javascript" src="../musubi.js"></script>
-    <script type="text/javascript" src="chat.js"></script>
+    <script type="text/javascript">
+//<![CDATA[
+function send() {
+  var xml = <message>
+              <body>{document.getElementById("msg").value}</body>
+            </message>;
+  Musubi.send(xml);
+  recv(xml);
+}
+
+function recv(xml) {
+  document.body.innerHTML += (xml.@from.length() ? xml.@from : "me") + ":" + xml.body + "<br/>";
+}
+
+function main() {
+  Musubi.init();
+  Musubi.onRecv = recv;
+};
+//]]>
+    </script>
   </head>
-  <body>
+  <body onload="main();">
     <form onsubmit="send(); return false;">
       <input type="text" id="msg"></input>
       <input type="submit"></input>

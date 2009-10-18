@@ -34,8 +34,8 @@ ul#tools {
 
 ul#tools > li {
   padding: 0;
-  margin-left:  20px;
-  margin-right: 20px;
+  margin-left:  40px;
+  margin-right: 40px;
   list-style-type: none;
   display: inline;
 }
@@ -60,15 +60,20 @@ img.tool {
 
 img.stamp-img {
   cursor: pointer;
-  border: solid blue;
+  border: solid lavender;
 }
 
 #stamp-maker {
-  padding-left: 40px;
 }
 
 #stamp-history {
   list-style-type: none;
+  padding-left: 0px;
+  width: 640px;
+}
+
+ul#stamp-history > li {
+  display: inline;
 }
 
 #muc-container {

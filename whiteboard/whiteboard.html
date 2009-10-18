@@ -9,8 +9,8 @@
   </head>
   <body>
     <div id="canvas-container">
-      <span id="canvas-history"></span>
       <img id="cursor-image" src="brush.png">
+      <span id="canvas-history"></span>
       <canvas id="small" width="320" height="240"></canvas>
       <canvas id="canvas" width="640" height="480"></canvas>
     </div>
@@ -18,17 +18,15 @@
       <ul id="tools">
         <li><img id="brush"  class="tool" alt="Brush"  src="brush.png"/></li>
         <li><img id="eraser" class="tool" alt="Eraser" src="eraser.png"/></li>
-        <li><img id="clear"  class="tool" alt="Clear"  src="clear.png"/></li>
-        <li><img id="send"   class="tool" alt="Send"   src="send.png"/></li>
         <li><img id="newcnv" class="tool" alt="New"    src="newcnv.png"/></li>
       </ul>
     </div>
+    <ul id="stamp-history">
+    </ul>
     <form id="stamp-maker">
       <input type="text" id="stamp-maker-src" value="http://sites.google.com/site/musubichat/dobon/d_lico.png"></input>
       <input type="submit" value="スタンプにする"></input>
       <canvas id="canvas-stamp-maker" width="240" height="30"></canvas>
     </form>
-    <ul id="stamp-history">
-    </ul>
   </body>
 </html>
