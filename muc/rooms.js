@@ -1,25 +1,56 @@
-function send() {
-  var xml = <iq id="disco2" type="get">
+// We need account's binded jid by the server.
+var bindedJID = "";
+
+function sendIQGetInfo() {
+  var xml = <iq id="info1" type="get">
+              <query xmlns="http://jabber.org/protocol/disco#info"/>
+            </iq>;
+  Musubi.send(xml);
+}
+
+function sendIQGetRooms() {
+  if (!bindedJID) return;
+  var xml = <iq from={bindedJID} id="disco2" type="get">
               <query xmlns="http://jabber.org/protocol/disco#items"/>
             </iq>;
   Musubi.send(xml);
 }
 
 function recv(xml) {
+  var nsDiscoInfo  = new Namespace("http://jabber.org/protocol/disco#info");
   var nsDiscoItems = new Namespace("http://jabber.org/protocol/disco#items");
-  if (xml.@id   == "disco2" &&
-      xml.@type == "result" &&
-      xml.nsDiscoItems::query.nsDiscoItems::item.length()) {
-    var items = xml.nsDiscoItems::query.nsDiscoItems::item;
-    var df = document.createDocumentFragment();
-    for (var i = 0, len = items.length(); i < len; i++) {
-      var li = new Element("li");
-      var a  = new Element("a", {href: "xmpp:" + items[i].@jid.toString() + "?share;href=muc.html"}).update(items[i].@name.toString());
-      li.appendChild(a);
-      df.appendChild(li);
+  if (xml.name().localName == "iq") {
+    if (xml.@id   == "info1"  &&
+        xml.@type == "result") {
+      bindedJID = xml.@to.toString();
+      sendIQGetRooms();
     }
-    $("rooms").appendChild(df);
+    if (xml.@id   == "disco2" &&
+        xml.@type == "result") {
+      var df = document.createDocumentFragment();
+      var items = xml.nsDiscoItems::query.nsDiscoItems::item;
+      for (var i = 0, len = items.length(); i < len; i++) {
+        var li = new Element("li");
+        var a  = new Element("a", {href: "xmpp:" + items[i].@jid.toString() + "#muc.html"}).update(items[i].@name.toString());
+        li.appendChild(a);
+        df.appendChild(li);
+      }
+      $("rooms").appendChild(df);
+      return;
+    }
   }
+}
+
+function recvTest0() {
+  recv(<iq from="conference.jabber.org" to="teruakigemma@gmail.com/MusubiF4220E2B" id="info1" type="result">
+       <query xmlns="http://jabber.org/protocol/disco#info">
+       <identity category="conference" type="text" name="Chatrooms"/>
+       <feature var="http://jabber.org/protocol/muc"/>
+       <feature var="jabber:iq:register"/>
+       <feature var="vcard-temp"/>
+       </query>
+       <meta account="teruakigemma@gmail.com/Musubi" direction="in" xmlns="http://hyperstruct.net/xmpp4moz/protocol/internal"/>
+       </iq>);
 }
 
 function recvTest0() {
@@ -51,19 +82,18 @@ function recvTest0() {
 }
 
 function main() {
-  Musubi.init();
-  Musubi.onRecv = recv;
+  Musubi.init(recv);
   Event.observe($("form-create-room"), "submit", function(e) {
     var room = $("room").value;
     if (room && Musubi.info) {
-      var o = Musubi.parseJID(Musubi.info.sendto);
-      if (o) {
-        document.location.href = "xmpp:" + room.toLowerCase() + "@" + o.domain + "?share;href=muc.html?create";
+      var q = Musubi.parseJID(Musubi.info.path);
+      if (q) {
+        document.location.href = "xmpp:" + room.toLowerCase() + "@" + q.domain + "#muc.html?create";
       }
     }
     Event.stop(e);
   });
-  send();
+  sendIQGetInfo();
 }
 
 window.onload = main;

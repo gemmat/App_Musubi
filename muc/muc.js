@@ -68,8 +68,7 @@ function recv(xml) {
 }
 
 function main() {
-  Musubi.init();
-  Musubi.onRecv = recv;
+  Musubi.init(recv);
   Event.observe("form-msg", "submit", function(e) {
     send();
     Event.stop(e);

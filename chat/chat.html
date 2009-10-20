@@ -13,12 +13,13 @@ function send() {
 }
 
 function recv(xml) {
-  document.body.innerHTML += (xml.@from.length() ? xml.@from : "me") + ":" + xml.body + "<br/>";
+  if (xml.name().localName == "message" && xml.body.toString()) {
+    document.body.innerHTML += (xml.@from.length() ? xml.@from : "me") + ":" + xml.body + "<br/>";
+  }
 }
 
 function main() {
-  Musubi.init();
-  Musubi.onRecv = recv;
+  Musubi.init(recv);
 };
 //]]>
     </script>

@@ -48,8 +48,7 @@ function recv(xml) {
 }
 
 Event.observe(window, "load", function(e) {
-  Musubi.init();
-  Musubi.onRecv = recv;
+  Musubi.init(recv);
   init();
 });
 

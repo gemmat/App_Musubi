@@ -7,6 +7,7 @@ var cnvHeight  = 480;
 var cnvWidthS  = 320;
 var cnvHeightS = 240;
 var chattype = "chat";
+var stampURL = "http://sites.google.com/site/musubichat/whiteboard/";
 
 function getPos(e) {
   var elt = e.element();
@@ -202,7 +203,6 @@ function sendCanvas(e) {
   smallctx.drawImage(cnv, 0, 0, cnvWidthS, cnvHeightS);
   var dataurl = smallcnv.toDataURL();
   var xml = <message type={chattype}>
-              <body>{dataurl}</body>
               <html xmlns="http://jabber.org/protocol/xhtml-im">
                 <body xmlns="http://www.w3.org/1999/xhtml">
                   <img src={dataurl}/>
@@ -216,7 +216,6 @@ function sendCanvas(e) {
 
 function sendStamp(aImgSrc, aX, aY) {
   var xml = <message type={chattype}>
-              <body>{aImgSrc + "at(" + aX + "," + aY + ")"}</body>
               <html xmlns="http://jabber.org/protocol/xhtml-im">
                 <body xmlns="http://www.w3.org/1999/xhtml">
                   <img src={aImgSrc} style={"position: absolute; left:" + aX + "px; top:" + aY + "px;"}/>
@@ -302,8 +301,7 @@ function onClickNewCanvas(e) {
 }
 
 function main() {
-  Musubi.init();
-  Musubi.onRecv = recv;
+  Musubi.init(recv);
   cnv = $("canvas");
   ctx= cnv.getContext("2d");
   smallcnv = $("small");
@@ -321,25 +319,24 @@ function main() {
   $("newcnv").observe("click", onClickNewCanvas);
   $("stamp-maker").observe("submit", onSubmitStampMaker);
   // absolute the URI of imgs' src.
-  var base = document.location.href.replace(/\/[^\/]*$/,"");
-  appendStampImgS([base + "/imgs/char_9728.png",
-                   base + "/imgs/char_9729.png",
-                   base + "/imgs/char_9730.png",
-                   base + "/imgs/char_9731.png",
-                   base + "/imgs/char_9733.png",
-                   base + "/imgs/char_9734.png",
-                   base + "/imgs/char_9749.png",
-                   base + "/imgs/char_9752.png",
-                   base + "/imgs/char_9760.png",
-                   base + "/imgs/char_9762.png",
-                   base + "/imgs/char_9785.png",
-                   base + "/imgs/char_9786.png",
-                   base + "/imgs/char_9792.png",
-                   base + "/imgs/char_9794.png",
-                   base + "/imgs/char_9816.png",
-                   base + "/imgs/char_9833.png",
-                   base + "/imgs/char_9834.png",
-                   base + "/imgs/char_9835.png"]);
+  appendStampImgS([stampURL + "char_9728.png",
+                   stampURL + "char_9729.png",
+                   stampURL + "char_9730.png",
+                   stampURL + "char_9731.png",
+                   stampURL + "char_9733.png",
+                   stampURL + "char_9734.png",
+                   stampURL + "char_9749.png",
+                   stampURL + "char_9752.png",
+                   stampURL + "char_9760.png",
+                   stampURL + "char_9762.png",
+                   stampURL + "char_9785.png",
+                   stampURL + "char_9786.png",
+                   stampURL + "char_9792.png",
+                   stampURL + "char_9794.png",
+                   stampURL + "char_9816.png",
+                   stampURL + "char_9833.png",
+                   stampURL + "char_9834.png",
+                   stampURL + "char_9835.png"]);
 }
 
 Event.observe(window, "load", main);
