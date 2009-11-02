@@ -11,6 +11,8 @@ function joinRoom() {
       Musubi.send(<presence res={nick}/>);
     }
     mynicks.push(nick);
+    $("navigation").style.width = "15%";
+    $("extra").style.display = "block";
   }
 }
 
@@ -28,25 +30,29 @@ function appendMessage(aFrom, aBody) {
 
 function send() {
   var xml = <message type="groupchat">
-	            <body>{$("msg").value}</body>
+	            <body>{$("input").value}</body>
             </message>;
   Musubi.send(xml);
-  $("msg").value = "";
+  $("input").value = "";
 }
 
 function recv(xml) {
   switch (xml.name().localName) {
   case "message":
-    appendMessage(xml.@from.toString(), xml.body.toString());
+    if (xml.@type == "error") {
+      appendMessage("Error:" + xml.@from.toString(), xml.toXMLString());
+    } else {
+      appendMessage(xml.@from.toString(), xml.body.toString());
+    }
     break;
   case "presence":
     var nav = $("navigation");
     var descs = xml.*;
-    for (var i = 0, len = descs.length(); i < len; i++) {
-      nav.appendChild(new Element("p") .update(descs[i].toXMLString()));
-    }
     if (xml.@type == "error") {
       nav.appendChild(new Element("h1").update("Error"));
+      for (var i = 0, len = descs.length(); i < len; i++) {
+        nav.appendChild(new Element("p") .update(descs[i].toXMLString()));
+      }
       break;
     }
     var participants = $("participants");
@@ -80,6 +86,8 @@ function main() {
   Event.observe("leave-room", "click", function(e) {
     leaveRoom();
   });
+  var m = /\?room=(.+)$/.exec(Musubi.info.frag);
+  if (m) $("room-title").appendChild(document.createTextNode(decodeURI(m[1])));
 }
 
 Event.observe(window, "load",   main);

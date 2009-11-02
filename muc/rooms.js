@@ -31,7 +31,7 @@ function recv(xml) {
       var items = xml.nsDiscoItems::query.nsDiscoItems::item;
       for (var i = 0, len = items.length(); i < len; i++) {
         var li = new Element("li");
-        var a  = new Element("a", {href: "xmpp:" + items[i].@jid.toString() + "#muc.html"}).update(items[i].@name.toString());
+        var a  = new Element("a", {href: "xmpp:" + items[i].@jid + "#muc.html?room=" + encodeURI(items[i].@name)}).update(items[i].@name.toString());
         li.appendChild(a);
         df.appendChild(li);
       }
