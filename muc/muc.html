@@ -1,45 +1,63 @@
-<html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Script-Type" content="text/html; charset=UTF-8" />
     <script type="text/javascript" src="../musubi.js"></script>
     <script type="text/javascript" src="../prototype.js"></script>
     <script type="text/javascript" src="muc.js"></script>
+    <link rel="stylesheet" type="text/css" href="base.css" />
+    <link rel="stylesheet" type="text/css" href="hatena2.css" />
     <link rel="stylesheet" type="text/css" href="muc.css" />
+    <title>Multi User Chat</title>
   </head>
   <body>
-    <div id="container">
-      <div id="header">
-        <h1 id="room-title">Multi User Chat</h1>
-      </div>
-      <div id="wrapper">
-        <div id="content">
-          <dl id="history"></dl>
-          <form id="form-msg">
-            <div>
-              <textarea tabindex="1" accesskey="u" name="input" id="input" rows="2" cols="40"></textarea>
-              <input type="submit" />
+    <h1 id="room-title">Multi User Chat</h1>
+    <div class="hatena-body">
+      <div class="main">
+        <div>
+          <div class="day">
+            <div class="body">
+              <div class="section">
+                <dl id="history"></dl>
+              </div>
             </div>
-          </form>
+            <form id="comment-form" class="comment">
+              <div class="comment">
+                <div class="commentshort">
+                  <p class="commentform">
+                    <textarea tabindex="1" accesskey="u" name="body" id="comment-textarea" rows="3" cols="40" value=""></textarea>
+                    <span class="comment-submit">
+                      <input id="comment-form-button" type="submit" />
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-      <div id="navigation">
-        <p>ニックネームを入力せよ</p>
-        <form id="form-nickname">
-          <div>
-            <input type="text" id="nickname" name="nickname" size="12"></input>
-            <br/>
-            <input type="submit" value="入る"></input>
-            <br/>
-            <input type="button" id="leave-room" value="出る"></input>
+      <div class="sidebar">
+        <div class="hatena-module">
+          <div class="hatena-moduletitle">nickname</div>
+          <div class="hatena-modulebody">
+            <form id="form-nickname">
+              <div>
+                <input type="text" id="nickname" name="nickname" size="12" />
+                <br/>
+                <input type="submit" id="join-room" value="join" />
+                <input type="button" id="leave-room" value="leave" />
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
-      <div id="extra">
-        <p>ここにいる人</p>
-        <ul id="participants"></ul>
-      </div>
-      <div id="footer">
-
+        </div>
+        <div class="hatena-module">
+          <div class="hatena-moduletitle">participants</div>
+          <div class="hatena-modulebody">
+            <ul id="participants" class="hatena-section"></ul>
+          </div>
+        </div>
       </div>
     </div>
   </body>

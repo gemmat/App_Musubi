@@ -11,8 +11,6 @@ function joinRoom() {
       Musubi.send(<presence res={nick}/>);
     }
     mynicks.push(nick);
-    $("navigation").style.width = "15%";
-    $("extra").style.display = "block";
   }
 }
 
@@ -30,10 +28,10 @@ function appendMessage(aFrom, aBody) {
 
 function send() {
   var xml = <message type="groupchat">
-	            <body>{$("input").value}</body>
+	            <body>{$("comment-textarea").value}</body>
             </message>;
   Musubi.send(xml);
-  $("input").value = "";
+  $("comment-textarea").value = "";
 }
 
 function recv(xml) {
@@ -46,16 +44,15 @@ function recv(xml) {
     }
     break;
   case "presence":
-    var nav = $("navigation");
+    var participants = $("participants");
     var descs = xml.*;
     if (xml.@type == "error") {
-      nav.appendChild(new Element("h1").update("Error"));
+      participants.appendChild(new Element("h1").update("Error"));
       for (var i = 0, len = descs.length(); i < len; i++) {
-        nav.appendChild(new Element("p") .update(descs[i].toXMLString()));
+        participants.appendChild(new Element("p") .update(descs[i].toXMLString()));
       }
       break;
     }
-    var participants = $("participants");
     var p = Musubi.parseJID(xml.@from.toString());
     var nick = p ? p.resource : xml.@from.toString();
     var arr = [];
@@ -73,9 +70,31 @@ function recv(xml) {
   }
 }
 
+function recvTest0() {
+  recv(<message from="room@conference.jabbar.org/Alice">
+         <body>Hello</body>
+       </message>);
+}
+
+function recvTest1() {
+  recv(<message from="room@conference.jabbar.org">
+         <body>Hi all</body>
+       </message>);
+}
+
+function recvTest2() {
+  recv(<presence from="room@conference.jabbar.org/Alice"/>);
+  recv(<presence from="room@conference.jabbar.org/Bob"/>);
+  recv(<presence from="room@conference.jabbar.org/Charlie"/>);
+}
+
+function recvTest3() {
+  recv(<presence from="room@conference.jabbar.org/Alice" type="unavailable"/>);
+}
+
 function main() {
   Musubi.init(recv);
-  Event.observe("form-msg", "submit", function(e) {
+  Event.observe("comment-form", "submit", function(e) {
     send();
     Event.stop(e);
   });
@@ -86,8 +105,10 @@ function main() {
   Event.observe("leave-room", "click", function(e) {
     leaveRoom();
   });
-  var m = /\?room=(.+)$/.exec(Musubi.info.frag);
-  if (m) $("room-title").appendChild(document.createTextNode(decodeURI(m[1])));
+  if (Musubi.info) {
+    var m = /\?room=(.+)$/.exec(Musubi.info.frag);
+    if (m) $("room-title").appendChild(document.createTextNode(decodeURI(m[1])));
+  }
 }
 
 Event.observe(window, "load",   main);

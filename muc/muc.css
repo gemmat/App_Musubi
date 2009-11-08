@@ -1,84 +1,12 @@
-html,body{ 
-  margin:0;
-  padding:0;
+#nickname {
+  font-size: 150%;
 }
 
-body{
-  font: 76% arial,sans-serif;
+#join-room {
+  font-size: 300%;
+  margin: 5px;
 }
 
-p{
-  margin:0 10px 10px;
-}
-
-a{
-  display:block;
-  color: #006;
-  padding:10px;
-}
-
-div#header{
-  position:relative
-}
-
-div#header h1{
-  height:80px;
-  line-height:80px;
-  margin:0;
-  padding-left:10px;
-  background: #EEE;
-  color: #79B30B;
-}
-
-div#header a{
-  position:absolute;
-  right:0;
-  top:23px;
-}
-
-div#wrapper{
-  float:left;
-  width:100%;
-}
-
-div#content{
-  margin: 0 15%;
-}
-
-div#content p{
-  line-height:1.4;
-}
-
-div#navigation{
-  background:#B9CAFF;
-  float:left;
-  width:100%;
-  margin-left:-100%;
-  text-align:center;
-}
-
-div#extra{
-  background:#FF8539;
-  float:left;
-  width:15%;
-  margin-left:-15%;
-  display: none;
-}
-
-div#footer{
-  background: #333;
-  color: #FFF;
-  clear:left;
-  width:100%;
-}
-
-div#footer p{
-  margin:0;
-  padding:5px 10px;
-}
-
-div#footer a{
-  display:inline;
-  padding:0;
-  color: #C6D5FD;
+#leave-room {
+  font-size: 150%;
 }
