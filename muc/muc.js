@@ -12,12 +12,14 @@ function joinRoom() {
     }
     mynicks.push(nick);
   }
+  $("comment-form").style.display = "";
 }
 
 function leaveRoom() {
   for (var i = 0; i < mynicks.length; i++) {
     Musubi.send(<presence res={mynicks[i]} type="unavailable"/>);
   }
+  $("comment-form").style.display = "none";
 }
 
 function appendMessage(aFrom, aBody) {
@@ -109,6 +111,7 @@ function main() {
     var m = /\?room=(.+)$/.exec(Musubi.info.frag);
     if (m) $("room-title").appendChild(document.createTextNode(decodeURI(m[1])));
   }
+  $("comment-form").style.display = "none";
 }
 
 Event.observe(window, "load",   main);

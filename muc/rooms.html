@@ -1,19 +1,44 @@
-<html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" type="text/css" href="rooms.css"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Script-Type" content="text/html; charset=UTF-8" />
     <script type="text/javascript" src="../musubi.js"></script>
     <script type="text/javascript" src="../prototype.js"></script>
     <script type="text/javascript" src="rooms.js"></script>
+    <link rel="stylesheet" type="text/css" href="base.css" />
+    <link rel="stylesheet" type="text/css" href="hatena2.css" />
+    <link rel="stylesheet" type="text/css" href="rooms.css" />
+    <title>Rooms</title>
   </head>
   <body>
-    <h1>ルームリスト</h1>
-    <ol id="rooms"></ol>
-    <h2>ルームをつくる</h2>
-    <form id="form-create-room">
-      ルーム名
-      <input id="room" type="text"></input>
-      <input type="submit"></input>
-    </form>
+    <h1>Rooms</h1>
+    <div class="hatena-body">
+      <div class="main">
+        <div>
+          <div class="day">
+            <div class="body">
+              <div class="section">
+                <ol id="rooms"></ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar">
+        <div class="hatena-module">
+          <div class="hatena-moduletitle">Create a room</div>
+          <div class="hatena-modulebody">
+            <form id="form-create-room">
+              <div>a name of room
+                <input id="room" type="text" />
+                <input type="submit" />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
