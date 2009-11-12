@@ -7,7 +7,8 @@ var cnvHeight  = 480;
 var cnvWidthS  = 320;
 var cnvHeightS = 240;
 var chattype = "chat";
-var stampURL = "http://sites.google.com/site/musubichat/whiteboard/";
+var nsXhtmlIm = new Namespace("http://jabber.org/protocol/xhtml-im");
+var nsXhtml   = new Namespace("http://www.w3.org/1999/xhtml");
 
 function getPos(e) {
   var elt = e.element();
@@ -140,14 +141,14 @@ var Cursor = Class.create({
   move: function(e) {
     var m = e.pointer();
     if (!this.status) {
-      this.img.style.display = "";
+      this.img.show();
       this.status = true;
     }
     this.img.style.left = m.x;
     this.img.style.top  = m.y;
   },
   out: function(e) {
-    this.img.style.display = "none";
+    this.img.hide();
     this.status = false;
   }
 });
@@ -184,8 +185,6 @@ function drawDot(x, y, size, col, trg) {
 }
 
 function recv(xml) {
-  var nsXhtmlIm = new Namespace("http://jabber.org/protocol/xhtml-im");
-  var nsXhtml = new Namespace("http://www.w3.org/1999/xhtml");
   var imgsrc   = xml.nsXhtmlIm::html..nsXhtml::img.@src;
   var imgstyle = xml.nsXhtmlIm::html..nsXhtml::img.@style;
   if (imgsrc.length()) {
@@ -208,6 +207,10 @@ function sendCanvas(e) {
                   <img src={dataurl}/>
                 </body>
               </html>
+              <x xmlns="jabber:x:oob">
+                <url>{Musubi.location.href}</url>
+                <desc>Musubi Whiteboard</desc>
+              </x>);
             </message>;
   clear(e);
   Musubi.send(xml);
@@ -221,6 +224,10 @@ function sendStamp(aImgSrc, aX, aY) {
                   <img src={aImgSrc} style={"position: absolute; left:" + aX + "px; top:" + aY + "px;"}/>
                 </body>
               </html>
+              <x xmlns="jabber:x:oob">
+                <url>{Musubi.location.href}</url>
+                <desc>Musubi Whiteboard</desc>
+              </x>);
             </message>;
   Musubi.send(xml);
   recv(xml);
@@ -318,25 +325,25 @@ function main() {
   $("eraser").observe("click", onClickEraser);
   $("newcnv").observe("click", onClickNewCanvas);
   $("stamp-maker").observe("submit", onSubmitStampMaker);
-  // absolute the URI of imgs' src.
-  appendStampImgS([stampURL + "char_9728.png",
-                   stampURL + "char_9729.png",
-                   stampURL + "char_9730.png",
-                   stampURL + "char_9731.png",
-                   stampURL + "char_9733.png",
-                   stampURL + "char_9734.png",
-                   stampURL + "char_9749.png",
-                   stampURL + "char_9752.png",
-                   stampURL + "char_9760.png",
-                   stampURL + "char_9762.png",
-                   stampURL + "char_9785.png",
-                   stampURL + "char_9786.png",
-                   stampURL + "char_9792.png",
-                   stampURL + "char_9794.png",
-                   stampURL + "char_9816.png",
-                   stampURL + "char_9833.png",
-                   stampURL + "char_9834.png",
-                   stampURL + "char_9835.png"]);
+  var imgsurl = Musubi.location.href.replace(/\/[^\/]*$/, "") + "/imgs/";
+  appendStampImgS([imgsurl + "char_9728.png",
+                   imgsurl + "char_9729.png",
+                   imgsurl + "char_9730.png",
+                   imgsurl + "char_9731.png",
+                   imgsurl + "char_9733.png",
+                   imgsurl + "char_9734.png",
+                   imgsurl + "char_9749.png",
+                   imgsurl + "char_9752.png",
+                   imgsurl + "char_9760.png",
+                   imgsurl + "char_9762.png",
+                   imgsurl + "char_9785.png",
+                   imgsurl + "char_9786.png",
+                   imgsurl + "char_9792.png",
+                   imgsurl + "char_9794.png",
+                   imgsurl + "char_9816.png",
+                   imgsurl + "char_9833.png",
+                   imgsurl + "char_9834.png",
+                   imgsurl + "char_9835.png"]);
 }
 
 Event.observe(window, "load", main);

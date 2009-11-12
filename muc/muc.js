@@ -4,22 +4,23 @@ function joinRoom() {
   var nick = $("nickname").value;
   if (nick) {
     if (/\?create$/.test(document.location.href)) {
-      Musubi.send(<presence res={nick}>
+      Musubi.send(<presence rsrc={nick}>
                     <x xmlns="http://jabber.org/protocol/muc"/>
                   </presence>);
     } else {
-      Musubi.send(<presence res={nick}/>);
+      Musubi.send(<presence rsrc={nick}/>);
     }
     mynicks.push(nick);
   }
-  $("comment-form").style.display = "";
+  $("guide").hide();
+  $("comment-form").show();
 }
 
 function leaveRoom() {
   for (var i = 0; i < mynicks.length; i++) {
-    Musubi.send(<presence res={mynicks[i]} type="unavailable"/>);
+    Musubi.send(<presence rsrc={mynicks[i]} type="unavailable"/>);
   }
-  $("comment-form").style.display = "none";
+  $("comment-form").hide();
 }
 
 function appendMessage(aFrom, aBody) {
@@ -107,11 +108,9 @@ function main() {
   Event.observe("leave-room", "click", function(e) {
     leaveRoom();
   });
-  if (Musubi.info) {
-    var m = /\?room=(.+)$/.exec(Musubi.info.frag);
-    if (m) $("room-title").appendChild(document.createTextNode(decodeURI(m[1])));
-  }
-  $("comment-form").style.display = "none";
+  var m = /\?room=(.+)$/.exec(Musubi.location.href);
+  if (m) $("room-title").appendChild(document.createTextNode(decodeURI(m[1])));
+  $("comment-form").hide();
 }
 
 Event.observe(window, "load",   main);

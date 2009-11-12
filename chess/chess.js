@@ -9,6 +9,8 @@ var coding = {
   R:"wR",N:"wN",B:"wB",Q:"wQ",K:"wK",P:"wP"
 };
 
+var nsChessboard = new Namespace("http://musubi.im/chess");
+
 function init(cb) {
   cboard = cb;
   fill();
@@ -123,6 +125,10 @@ function send() {
   var msg = document.getElementById("msg");
   var xml = <message type="chat">
 	            <body>{msg.value}</body>
+              <x xmlns="jabber:x:oob">
+                <url>{Musubi.location.href}</url>
+                <desc>Musubi Chess</desc>
+              </x>);
             </message>;
   Musubi.send(xml);
   appendMessage("me", msg.value);
@@ -133,15 +139,16 @@ function send() {
 function sendChessboard(cb) {
   var xml = <message type="chat">
 	            <body>{cb}</body>
-              <chessboard xmlns="http://sites.google.com/site/musubichat/chess">
-                {cb}
-              </chessboard>
+              <chessboard xmlns={nsChessboard.uri}>{cb}</chessboard>
+              <x xmlns="jabber:x:oob">
+                <url>{Musubi.location.href}</url>
+                <desc>Musubi Chess</desc>
+              </x>);
             </message>;
   Musubi.send(xml);
 }
 
 function recv(xml) {
-  var nsChessboard = new Namespace("http://sites.google.com/site/musubichat/chess");
   if (xml.nsChessboard::chessboard.length()) {
     var cb = xml.nsChessboard::chessboard.toString();
     if (mpoint == moveLen) {

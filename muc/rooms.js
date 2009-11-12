@@ -85,8 +85,8 @@ function main() {
   Musubi.init(recv);
   Event.observe($("form-create-room"), "submit", function(e) {
     var room = $("room").value;
-    if (room && Musubi.info) {
-      var q = Musubi.parseJID(Musubi.info.path);
+    if (room && Musubi.location.info) {
+      var q = Musubi.parseJID(Musubi.location.info.path);
       if (q) {
         document.location.href = "xmpp:" + room.toLowerCase() + "@" + q.domain + "#muc.html?create";
       }
