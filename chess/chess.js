@@ -163,8 +163,10 @@ function recv(xml) {
     }
     disableButtons();
   } else {
-    appendMessage(xml.@from.toString(),
-                  xml.body.toString());
+    if (xml.body.length()) {
+      appendMessage(xml.@from.toString(),
+                    xml.body.toString());
+    }
   }
 }
 
