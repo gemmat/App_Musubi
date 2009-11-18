@@ -1,0 +1,13 @@
+#history {
+    padding-left: 0px;
+    list-style-type: none;
+}
+
+.contact {
+    color:blue;
+    cursor:pointer;
+    text-decoration:underline;
+}
+
+.status {
+}
