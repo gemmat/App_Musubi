@@ -10,9 +10,18 @@ function appendHistory(aElement) {
   }
 }
 
+function replaceLink(aString) {
+  var re = /\s(ftp|http|https|xmpp):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/g;
+  function converter(str) {
+    var dest = str.slice(1);
+    return ' <a href="' + dest + '">' + dest + '</a>';
+  }
+  return aString.replace(re, converter);
+}
+
 function appendMessage(aFrom, aMessage) {
   var li = new Element("li");
-  li.appendChild(document.createTextNode(aFrom.replace(/@.*/, "") + ": " + aMessage.toString()));
+  li.appendChild(document.createTextNode(aFrom.replace(/@.*/, "") + ": " + replaceLink(aMessage)));
   new Tip(li, Date(),
           {
             title: aFrom,
@@ -26,7 +35,7 @@ function appendMessage(aFrom, aMessage) {
 
 function appendXHTMLMessage(aFrom, aMessage) {
   var li = new Element("li");
-  li.innerHTML = aMessage;
+  li.innerHTML = replaceLink(aMessage);
   new Tip(li, Date(),
           {
             title: aFrom,
@@ -55,7 +64,7 @@ function send(e) {
 function recv(xml) {
   if (xml.name().localName != "message") return;
   if (xml.nsXHTMLIm::html.nsXHTML::body.length()) {
-    appendXHTMLMessage(xml.@from.toString(), xml.nsXHTMLIm::html.nsXHTML::body);
+    appendXHTMLMessage(xml.@from.toString(), xml.nsXHTMLIm::html.nsXHTML::body.toString());
   } else if (xml.body.length()) {
     appendMessage(xml.@from.toString(), xml.body.toString());
   }
@@ -63,6 +72,9 @@ function recv(xml) {
 
 function main(e) {
   Musubi.init(recv);
+  if (Musubi.location.info) {
+    document.title = Musubi.location.info.path;
+  };
   Event.observe($("form"), "submit", send);
 }
 
