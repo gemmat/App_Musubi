@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Script-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="../musubi.js"></script>
+    <script type="text/javascript" src="../prototype.js"></script>
+    <script type="text/javascript" src="player.js"></script>
+    <link rel="stylesheet" type="text/css" href="layout.css" media="screen, projection, tv ">
+    <link rel="stylesheet" type="text/css" href="html.css" media="screen, projection, tv ">
+    <title>Player</title>
+  </head>
+  <body>
+    <!-- #content: holds all except site footer - causes footer to stick to bottom -->
+    <div id="content">
+      <!-- #header: holds the logo and top links -->
+      <div id="header" class="width">
+        <img src="images/logo.gif" alt="Your logo goes here">
+        <ul>
+          <li><a href="">Back to Main page</a></li>
+          <li><a href="">About us</a></li>
+          <li><a href="">Streaming Video</a></li>
+          <li><a href="" class="last">RSS Feeds</a></li>
+        </ul>
+      </div>
+      <!-- #header end -->
+      <!-- #headerImg: holds the main header image or flash -->
+      <div id="headerImg" class="width"></div>
+      <!-- #menu: the main large box site menu -->
+      <div id="menu" class="width">
+        <div>
+          <ul>
+            <li>
+              <a href="" onfocus="blur()">
+                <span class="title">Menu0</span>
+                <span class="desc">Desc0</span>
+              </a>
+            </li>
+            <li>
+              <a href="" onfocus="blur()">
+                <span class="title">Menu1</span>
+                <span class="desc">Desc1</span>
+              </a>
+            </li>
+            <li>
+              <a href="" onfocus="blur()">
+                <span class="title">Menu2</span>
+                <span class="desc">Desc2</span>
+              </a>
+            </li>
+            <li>
+              <a href="" onfocus="blur()">
+                <span class="title">Menu3</span>
+                <span class="desc">Desc3</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- #menu end -->
+      <!-- #page: holds the page content -->
+      <div id="page">
+        <!-- #columns: holds the columns of the page -->
+        <div id="columns" class="widthPad">
+          <!-- Left thumbnail column -->
+          <div class="floatLeft width25">
+            <div id="inventory">
+              <div>
+                <h1>Inventory</h1>
+                <ul id="player-items" style="height: 20em">
+                  <li>oaken club</li>
+                  <li>leather shield</li>
+                </ul>
+                <form id="player-message">
+                  <div>
+                    Chat<br/>
+                    <input id="player-message-body" type="text" value=""/>
+                    <ul id="player-message-history" style="padding-left: 1em;"/>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- Left thumbnails end -->
+          <!-- Right column -->
+          <div class="floatRight width75">
+            <div id="main">
+              <div>
+                <h1>Shop</h1>
+                <img src="images/ProofGeneral.jpg" alt="shopkeeper" class="alignLeft border">
+                <blockquote>
+                  <p id="master-message"></p>
+                </blockquote>
+                <br>
+                <div id="inventory">
+                  <h2>
+                    <button onclick="playerBuy('cypress stick')">cypress stick</button>
+                  </h2>
+                  <h2>
+                    <button onclick="playerBuy('plain clothes')">plain clothes</button>
+                  </h2>
+                  <h2>
+                    <button onclick="playerBuy('medicinal herb')">medicinal herb</button>
+                  </h2>
+                  <h2>
+                    <button onclick="playerBuy('antidotal herb')">antidotal herb</button>
+                  </h2>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Right column end -->
+        </div>
+        <!-- #columns end -->
+      </div>
+      <!-- #page end -->
+    </div>
+    <!-- #content end -->
+    <!-- #footer: holds the site footer (logo and links) -->
+    <div id="footer">
+      <!-- #bg: applies the site width and footer background -->
+      <div id="bg" class="width">
+        <img src="images/logo.gif" alt="Your logo goes here">
+        <ul>
+          <li>
+            <a href="">Sitemap</a>
+          </li>
+          <li>
+            <a href="">Register</a>
+          </li>
+          <li>
+            <a href="">Design inspired by</a>
+          </li>
+          <li>
+            <a href="http://www.studio7designs.com/" class="last">studio7designs.com</a>
+          </li>
+        </ul>
+      </div>
+      <!-- #bg end -->
+    </div>
+  </body>
+</html>
