@@ -1,6 +1,9 @@
 function recv(aXML) {
-  aXML.@to = $F("dest");
-  Musubi.send(aXML);
+  var arr = $("dest").getValue();
+  for (var i = 0; i < arr.length; i++) {
+    aXML.@to = arr[i];
+    Musubi.send(aXML);
+  };
 }
 
 function main(evt) {
